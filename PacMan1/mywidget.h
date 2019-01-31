@@ -8,15 +8,21 @@ class MyWidget : public QWidget
 {
 	Q_OBJECT
 private:
-	std::vector<QRect> walls;
-	std::list<QRect> points;
-	std::list<QRect> bigPoints;
+	std::vector<QPoint> walls_horizontal;
+	std::vector<QPoint> walls_vertical;
+	std::vector<QPoint> walls_1;
+	std::vector<QPoint> walls_2;
+	std::vector<QPoint> walls_3;
+	std::vector<QPoint> walls_4;
+	std::list<QPoint> points;
+	std::list<QPoint> bigPoints;
 //	std::list<Ghost> ghosts;
 //	Pacman pacman;
 	std::vector<std::string> mapArray;
 	void loadMap();
-	void prepareObjects();
-	void drawWalls();
+	void distributeMapObjects();
+	void drawWalls(QPainter &painter, std::vector<QPoint> &wallType, QPixmap image);
+	void drawPoints(QPainter &painter);
 protected:
 	void paintEvent(QPaintEvent *);
 public:
