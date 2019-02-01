@@ -19,6 +19,7 @@ private:
 	std::vector<QRect> walls_2;
 	std::vector<QRect> walls_3;
 	std::vector<QRect> walls_4;
+	std::vector<QRect*> allWalls;
 	std::list<QRect> points;
 	std::list<QPoint> bigPoints;
 //	std::list<Ghost> ghosts;
@@ -28,6 +29,7 @@ private:
 	void loadMap();
 	void distributeMapObjects();
 	void drawWalls(QPainter &painter, std::vector<QRect> &wallType, QPixmap image);
+	void drawWalls2(QPainter &painter, std::vector<QRect*> &wallType, QPixmap image);
 	void drawPoints(QPainter &painter);
 	void drawPacman(QPainter &painter);
 	void handleSmallPointCollision();

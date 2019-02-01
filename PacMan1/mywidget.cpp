@@ -26,6 +26,7 @@ void MyWidget::startGame() {
 	walls_2 = std::vector<QRect>();
 	walls_3 = std::vector<QRect>();
 	walls_4 = std::vector<QRect>();
+	allWalls = std::vector<QRect*>();
 	points = std::list<QRect>();
 	bigPoints = std::list<QPoint>();
 
@@ -56,21 +57,27 @@ void MyWidget::distributeMapObjects() {
 
 			case '0':	//horizontal wall
 				walls_horizontal.push_back(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H));
+				allWalls.push_back(&(walls_horizontal.back()));
 				break;
 			case '1':	//upperleft wall corner
 				walls_1.push_back(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H));
+				//allWalls.push_back(&(walls_1.back()));													// here i use pointers to walls to store all walltypes in one container to easily iterate after all possible walls
 				break;
 			case '2':	//upperright wall corner
 				walls_2.push_back(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H));
+				//allWalls.push_back(&(walls_2.back()));			// here i use pointers to walls to store all walltypes in one container to easily iterate after all possible walls
 				break;
 			case '3':	//lowerleft wall corner
 				walls_3.push_back(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H));
+				//allWalls.push_back(&(walls_3.back()));			// here i use pointers to walls to store all walltypes in one container to easily iterate after all possible walls
 				break;
 			case '4':	//lowerright wall corner
 				walls_4.push_back(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H));
+				//allWalls.push_back(&(walls_4.back()));			// here i use pointers to walls to store all walltypes in one container to easily iterate after all possible walls
 				break;
 			case '|':	//vertical wall
 				walls_vertical.push_back(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H));
+				//allWalls.push_back(&(walls_vertical.back()));		// here i use pointers to walls to store all walltypes in one container to easily iterate after all possible walls
 				break;
 			case '.':	//point
 				points.push_back(QRect(int(c)*TILE_W + TILE_W/2 - SMALL_POINT_W/2,
@@ -98,15 +105,15 @@ void MyWidget::paintEvent(QPaintEvent *){
 
 	drawPoints(painter);
 
-	drawWalls(painter, walls_horizontal, wall);
-	drawWalls(painter, walls_vertical, wall.transformed(rotation));
-	drawWalls(painter, walls_1, wall_knee);
-	drawWalls(painter, walls_2, wall_knee.transformed(rotation));
-	rotation.rotate(180);
-	drawWalls(painter, walls_3, wall_knee.transformed(rotation));
-	rotation.rotate(270);
-	drawWalls(painter, walls_4, wall_knee.transformed(rotation));
-
+//	drawWalls(painter, walls_horizontal, wall);
+//	drawWalls(painter, walls_vertical, wall.transformed(rotation));
+//	drawWalls(painter, walls_1, wall_knee);
+//	drawWalls(painter, walls_2, wall_knee.transformed(rotation));
+//	rotation.rotate(180);
+//	drawWalls(painter, walls_3, wall_knee.transformed(rotation));
+//	rotation.rotate(270);
+//	drawWalls(painter, walls_4, wall_knee.transformed(rotation));
+	drawWalls2(painter, allWalls, wall);
 
 //	std::cout << pacman.x() << ", " << pacman.y() << std::endl;             // print pacman's coordinates
 	drawPacman(painter);
@@ -118,6 +125,7 @@ void MyWidget::updateScreen(){
 	if(frameCounter == ENTITY_SPEED) {
 		frameCounter = 0;
 		handleSmallPointCollision();
+		pacman.validateMoves(allWalls);
 		pacman.move();
 	}
 	this->update();
@@ -152,6 +160,12 @@ void MyWidget::keyPressEvent(QKeyEvent *event){
 void MyWidget::drawWalls(QPainter &painter, std::vector<QRect> &wallType, QPixmap image){
 	for(QRect rect : wallType){
 		painter.drawPixmap(rect, image);
+	}
+}
+
+void MyWidget::drawWalls2(QPainter &painter, std::vector<QRect*> &wallType, QPixmap image){
+	for(QRect* rect : wallType){
+		painter.drawPixmap(*rect, image);
 	}
 }
 

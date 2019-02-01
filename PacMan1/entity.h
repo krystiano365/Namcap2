@@ -9,7 +9,7 @@ class Entity: public QRect
 {
 
 private:
-
+	void modifyNextMove();
 protected:
 	explicit Entity(QRect rect);
 	virtual ~Entity() = default;
@@ -18,8 +18,9 @@ public:
 	bool isEatable;
 	bool canMove;
 	std::pair<short, short> direction_now;
-	std::pair<short, short> direction_next;
+	QRect nextMove;
 	void move();
+	void validateMoves(const std::vector<QRect*> &allWalls);
 };
 
 #endif // ENTITY_H
