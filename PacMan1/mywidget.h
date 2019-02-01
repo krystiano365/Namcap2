@@ -29,13 +29,14 @@ private:
 	void drawWalls(QPainter &painter, std::vector<QRect> &wallType, QPixmap image);
 	void drawPoints(QPainter &painter);
 	void drawPacman(QPainter &painter);
-
 public:
 	explicit MyWidget(QWidget *parent = nullptr);
 	~MyWidget();
 
 	void paintEvent(QPaintEvent *);
 	void keyPressEvent(QKeyEvent *);
+public slots:
+	void updateScreen();
 };
 
 #endif // MYWIDGET_H

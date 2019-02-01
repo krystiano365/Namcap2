@@ -10,12 +10,13 @@
 MyWidget::MyWidget(QWidget *parent) : QWidget(parent), pacman(QRect())
 {
 	timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(updateScreen()));
 	startGame();
 }
 
 MyWidget::~MyWidget()
 {
-
+	delete timer;
 }
 
 void MyWidget::startGame() {
@@ -30,6 +31,7 @@ void MyWidget::startGame() {
 
 	loadMap();
 	distributeMapObjects();
+	timer->start(FRAMERATE);
 }
 
 void MyWidget::loadMap(){
@@ -91,57 +93,50 @@ void MyWidget::paintEvent(QPaintEvent *){
 
 	QPixmap wall(QString(CURDIR).append("utils/wall_horizontal.bmp"));
 	QPixmap wall_knee(QString(CURDIR).append("utils/wall_knee.bmp"));
+	QTransform rotation;
+	rotation.rotate(90);
 
 	drawPoints(painter);
 
-	QTransform rotation;
-	rotation.rotate(90);
 	drawWalls(painter, walls_horizontal, wall);
 	drawWalls(painter, walls_vertical, wall.transformed(rotation));
 	drawWalls(painter, walls_1, wall_knee);
 	drawWalls(painter, walls_2, wall_knee.transformed(rotation));
-
 	rotation.rotate(180);
 	drawWalls(painter, walls_3, wall_knee.transformed(rotation));
-
 	rotation.rotate(270);
 	drawWalls(painter, walls_4, wall_knee.transformed(rotation));
 
-	if(pacman.x() < 0){
-		pacman.translate(TILE_W*(MAP_W), 0);
-	}
-	if(pacman.x() >= TILE_W*MAP_W){
-		pacman.translate(-TILE_W*(MAP_W), 0);
-	}
 
-	std::cout << pacman.x() << ", " << pacman.y() << std::endl;
+	//std::cout << pacman.x() << ", " << pacman.y() << std::endl;             // print pacman's coordinates
 	drawPacman(painter);
 
+}
+
+void MyWidget::updateScreen(){
+	pacman.move();
+	this->update();
 }
 
 void MyWidget::keyPressEvent(QKeyEvent *event){
 	switch (event->key()) {
 	case Qt::Key_Up:
 		std::cout<<"up"<<std::endl;
-		pacman.translate(0, -TILE_H);
+		pacman.direction_now = UP;
 		break;
 	case Qt::Key_Down:
 		std::cout<<"down"<<std::endl;
-		pacman.translate(0, TILE_H);
+		pacman.direction_now = DOWN;
 		break;
 	case Qt::Key_Right:
 		std::cout<<"right"<<std::endl;
-		pacman.translate(TILE_W, 0);
+		pacman.direction_now = RIGHT;
 		break;
 	case Qt::Key_Left:
 		std::cout<<"left"<<std::endl;
-		pacman.translate(-TILE_W, 0);
+		pacman.direction_now = LEFT;
 		break;
 	}
-
-
-	this->update();
-
 
 }
 
@@ -163,5 +158,20 @@ void MyWidget::drawPoints(QPainter &painter){
 
 void MyWidget::drawPacman(QPainter &painter){
 	painter.setBrush(Qt::yellow);
-	painter.drawPie(pacman, 16*225, 16*270);
+
+	pacman.moveMouth();
+	painter.drawPie(pacman, 16*pacman.mouthLowerLipAngle, 16*pacman.mouthAngle);
+
 }
+
+//if(pacman.angleDecreaseMode){
+//	pacman.mouthAngle -= 10;
+//	pacman.mouthLowerLipAngle += 5;
+//	if(pacman.mouthAngle <= 270)
+//		pacman.angleDecreaseMode = false;
+//} else {
+//	pacman.mouthAngle += 10;
+//	pacman.mouthLowerLipAngle -= 5;
+//	if(pacman.mouthAngle >= 360)
+//		pacman.angleDecreaseMode = true;
+//}
