@@ -26,12 +26,16 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mywidget.cpp
+        mywidget.cpp \
+    entity.cpp \
+    pacman.cpp
 
 HEADERS += \
         mywidget.h \
     consts.h \
-    auxfunc.h
+    auxfunc.h \
+    entity.h \
+    pacman.h
 
 FORMS += \
         mywidget.ui
