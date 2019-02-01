@@ -21,4 +21,19 @@ void Pacman::moveMouth()
 	}
 }
 
+void Pacman::turnEntity()
+{
+	if (direction_now == LEFT){
+		rotationAngle = 0;
+	} else if (direction_now == RIGHT) {
+		rotationAngle = 180;
+	} else if (direction_now == UP) {
+		rotationAngle = 90;
+	} else if (direction_now == DOWN){
+		rotationAngle = -90;
+	}
+}
+
+
+
 

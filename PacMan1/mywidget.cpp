@@ -108,13 +108,18 @@ void MyWidget::paintEvent(QPaintEvent *){
 	drawWalls(painter, walls_4, wall_knee.transformed(rotation));
 
 
-	//std::cout << pacman.x() << ", " << pacman.y() << std::endl;             // print pacman's coordinates
+//	std::cout << pacman.x() << ", " << pacman.y() << std::endl;             // print pacman's coordinates
 	drawPacman(painter);
 
 }
 
 void MyWidget::updateScreen(){
-	pacman.move();
+	frameCounter++;
+	if(frameCounter == ENTITY_SPEED) {
+		frameCounter = 0;
+		handleSmallPointCollision();
+		pacman.move();
+	}
 	this->update();
 }
 
@@ -135,6 +140,10 @@ void MyWidget::keyPressEvent(QKeyEvent *event){
 	case Qt::Key_Left:
 		std::cout<<"left"<<std::endl;
 		pacman.direction_now = LEFT;
+		break;
+	case Qt::Key_Space:
+		std::cout<<"stopped"<<std::endl;
+		pacman.direction_now = NO_MOVE;
 		break;
 	}
 
@@ -158,10 +167,21 @@ void MyWidget::drawPoints(QPainter &painter){
 
 void MyWidget::drawPacman(QPainter &painter){
 	painter.setBrush(Qt::yellow);
-
 	pacman.moveMouth();
-	painter.drawPie(pacman, 16*pacman.mouthLowerLipAngle, 16*pacman.mouthAngle);
+	pacman.turnEntity();
+	painter.drawPie(pacman, 16*(pacman.mouthLowerLipAngle-pacman.rotationAngle), 16*(pacman.mouthAngle));
 
+}
+
+void MyWidget::handleSmallPointCollision() {
+
+	for(QRect& point : points) {
+		if(pacman.intersects(point)) {
+			points.remove(point);
+			// todo ADDING SCORE
+			break;
+		}
+	}
 }
 
 //if(pacman.angleDecreaseMode){

@@ -14,6 +14,10 @@
 
 #define CURDIR ("/home/krystian/Documents/C++/qtcreator/PacMan1/")
 
+enum DIRECTION {
+	_LEFT, _RIGHT, _UP, _DOWN
+};
+
 #define RIGHT std::pair<short, short>(TILE_W, 0)
 #define LEFT std::pair<short, short>(-TILE_W, 0)
 #define UP std::pair<short, short>(0, -TILE_H)

@@ -8,7 +8,7 @@ Entity::Entity(QRect rect) : QRect(rect)
 }
 
 void Entity::move() {
-	countFrames();
+	//countFrames();
 	if(canMove){
 		translate(direction_now.first, direction_now.second);
 	}
@@ -21,11 +21,11 @@ void Entity::move() {
 	}
 }
 
-void Entity::countFrames() {
-	canMove = false;
-	frameCounter++;
-	if(frameCounter == ENTITY_SPEED){
-		frameCounter = 0;
-		canMove = true;
-	}
-}
+//void Entity::countFrames() {
+//	canMove = false;
+//	frameCounter++;
+//	if(frameCounter == ENTITY_SPEED){
+//		frameCounter = 0;
+//		canMove = true;
+//	}
+//}

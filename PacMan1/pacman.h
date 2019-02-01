@@ -10,8 +10,10 @@ public:
 	int mouthCounter = 0;
 	int mouthAngle = 270;
 	int mouthLowerLipAngle = 225;
+	int rotationAngle = 0;
 	bool angleDecreaseMode = true;
 	void moveMouth();
+	void turnEntity() override;
 };
 
 #endif // PACMAN_H

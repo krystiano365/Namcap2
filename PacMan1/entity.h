@@ -9,12 +9,11 @@ class Entity: public QRect
 {
 
 private:
-	int frameCounter = 0;
-	void countFrames();
+
 protected:
 	explicit Entity(QRect rect);
 	virtual ~Entity() = default;
-
+	virtual void turnEntity() = 0;
 public:
 	bool isEatable;
 	bool canMove;

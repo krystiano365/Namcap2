@@ -12,6 +12,7 @@ class MyWidget : public QWidget
 	Q_OBJECT
 private:
 	QTimer *timer;
+	int frameCounter = 0;
 	std::vector<QRect> walls_horizontal;
 	std::vector<QRect> walls_vertical;
 	std::vector<QRect> walls_1;
@@ -29,6 +30,7 @@ private:
 	void drawWalls(QPainter &painter, std::vector<QRect> &wallType, QPixmap image);
 	void drawPoints(QPainter &painter);
 	void drawPacman(QPainter &painter);
+	void handleSmallPointCollision();
 public:
 	explicit MyWidget(QWidget *parent = nullptr);
 	~MyWidget();
