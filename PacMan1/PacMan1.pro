@@ -28,14 +28,18 @@ SOURCES += \
         main.cpp \
         mywidget.cpp \
     entity.cpp \
-    pacman.cpp
+    pacman.cpp \
+    ghost.cpp \
+    ghostred.cpp
 
 HEADERS += \
         mywidget.h \
     consts.h \
     auxfunc.h \
     entity.h \
-    pacman.h
+    pacman.h \
+    ghost.h \
+    ghostred.h
 
 FORMS += \
         mywidget.ui
@@ -45,6 +49,7 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+RESOURCES += map.qrc
 
 
 

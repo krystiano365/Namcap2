@@ -3,7 +3,7 @@
 Pacman::Pacman(QRect rect) : Entity(rect)
 {
 	isEatable = true;
-	canMove = true;
+	canMove = false;
 }
 
 void Pacman::moveMouth()

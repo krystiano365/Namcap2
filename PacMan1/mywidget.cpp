@@ -30,6 +30,8 @@ void MyWidget::startGame() {
 	allWalls = std::vector<std::shared_ptr<QRect>>();
 	points = std::list<QRect>();
 	bigPoints = std::list<QPoint>();
+	ghosts = std::vector<Ghost*>();
+	//ghosts.reserve(4);
 
 	loadMap();
 	distributeMapObjects();
@@ -53,6 +55,7 @@ void MyWidget::loadMap(){
 
 void MyWidget::distributeMapObjects() {
 	std::shared_ptr<QRect> ptr = nullptr; // pointer to wall
+
 	for(unsigned int c = 0; c < mapArray.at(0).size(); c++){
 		for(unsigned int r = 0; r < mapArray.size(); r++){
 			switch (mapArray[r][c]){
@@ -97,6 +100,18 @@ void MyWidget::distributeMapObjects() {
 			case 'c':
 				pacman.setRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H);
 				break;
+			case 'a':
+				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
+				break;
+			case 'b':
+				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
+				break;
+			case 'd':
+				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
+				break;
+			case 'e':
+				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
+				break;
 			}
 		}
 	}
@@ -112,6 +127,7 @@ void MyWidget::distributeMapObjects() {
 void MyWidget::paintEvent(QPaintEvent *){
 	QPainter painter(this);
 	painter.setPen(Qt::NoPen);
+	painter.setBrush(Qt::red);
 
 	QPixmap wall(QString(CURDIR).append("utils/wall_horizontal.bmp"));
 	QPixmap wall_knee(QString(CURDIR).append("utils/wall_knee.bmp"));
@@ -130,8 +146,34 @@ void MyWidget::paintEvent(QPaintEvent *){
 	drawWalls(painter, walls_4, wall_knee.transformed(rotation));
 //	drawWalls2(painter, allWalls, wall);
 
+	if(pacman.canRotateUp)
+		painter.setBrush(Qt::green);
+	else
+		painter.setBrush(Qt::red);
+	painter.drawRect(pacman.stepUp);
+	if(pacman.canRotateDown)
+		painter.setBrush(Qt::green);
+	else
+		painter.setBrush(Qt::red);
+	painter.drawRect(pacman.stepDown);
+	if(pacman.canRotateLeft)
+		painter.setBrush(Qt::green);
+	else
+		painter.setBrush(Qt::red);
+	painter.drawRect(pacman.stepLeft);
+	if(pacman.canRotateRight)
+		painter.setBrush(Qt::green);
+	else
+		painter.setBrush(Qt::red);
+	painter.drawRect(pacman.stepRight);
+
 //	std::cout << pacman.x() << ", " << pacman.y() << std::endl;             // print pacman's coordinates
 	drawPacman(painter);
+	for(Ghost* ghost : ghosts){
+		drawGhost(painter, ghost, wall);
+	}
+
+
 
 }
 
@@ -150,19 +192,23 @@ void MyWidget::keyPressEvent(QKeyEvent *event){
 	switch (event->key()) {
 	case Qt::Key_Up:
 		std::cout<<"up"<<std::endl;
-		pacman.direction_now = UP;
+		if (pacman.canRotateUp)
+			pacman.direction_now = UP;
 		break;
 	case Qt::Key_Down:
 		std::cout<<"down"<<std::endl;
-		pacman.direction_now = DOWN;
+		if (pacman.canRotateDown)
+			pacman.direction_now = DOWN;
 		break;
 	case Qt::Key_Right:
 		std::cout<<"right"<<std::endl;
-		pacman.direction_now = RIGHT;
+		if (pacman.canRotateRight)
+			pacman.direction_now = RIGHT;
 		break;
 	case Qt::Key_Left:
 		std::cout<<"left"<<std::endl;
-		pacman.direction_now = LEFT;
+		if (pacman.canRotateLeft)
+			pacman.direction_now = LEFT;
 		break;
 	case Qt::Key_Space:
 		std::cout<<"stopped"<<std::endl;
@@ -178,7 +224,7 @@ void MyWidget::drawWalls(QPainter &painter, std::vector<QRect> &wallType, QPixma
 	}
 }
 
-void MyWidget::drawWalls2(QPainter &painter, std::vector<std::shared_ptr<QRect>> &wallType, QPixmap image){
+void MyWidget::drawWalls2(QPainter &painter, std::vector<std::shared_ptr<QRect>> &wallType, QPixmap &image){
 	for(auto rect : wallType){
 		painter.drawPixmap(*rect, image);
 	}
@@ -200,6 +246,11 @@ void MyWidget::drawPacman(QPainter &painter){
 	pacman.turnEntity();
 	painter.drawPie(pacman, 16*(pacman.mouthLowerLipAngle-pacman.rotationAngle), 16*(pacman.mouthAngle));
 
+}
+
+void MyWidget::drawGhost(QPainter &painter, Ghost* ghost, QPixmap &image){
+	painter.setBrush(Qt::red);
+	painter.drawPixmap(*ghost, image);
 }
 
 void MyWidget::handleSmallPointCollision() {

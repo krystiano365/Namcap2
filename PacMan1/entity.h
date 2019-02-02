@@ -10,7 +10,7 @@ class Entity: public QRect
 {
 
 private:
-	void modifyNextMove();
+	void modifyStepForward();
 protected:
 	explicit Entity(QRect rect);
 	virtual ~Entity() = default;
@@ -18,10 +18,14 @@ protected:
 public:
 	bool isEatable;
 	bool canMove;
+	bool canRotateLeft, canRotateRight, canRotateUp, canRotateDown;
 	std::pair<short, short> direction_now;
-	QRect nextMove;
+	QRect stepForward;
+	QRect stepLeft, stepRight, stepDown, stepUp;
+	void updateCollisionRects();
 	void move();
 	void validateMoves(const std::vector<std::shared_ptr<QRect>> &allWalls);
+	void checkRotate(bool &canWhere, QRect &whereRect, std::shared_ptr<QRect> &wall);
 };
 
 #endif // ENTITY_H

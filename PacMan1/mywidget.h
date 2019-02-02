@@ -3,6 +3,7 @@
 
 #include "consts.h"
 #include "pacman.h"
+#include "ghostred.h"
 #include <QWidget>
 #include <QKeyEvent>
 #include <memory>
@@ -23,16 +24,17 @@ private:
 	std::vector<std::shared_ptr<QRect>> allWalls;
 	std::list<QRect> points;
 	std::list<QPoint> bigPoints;
-//	std::list<Ghost> ghosts;
+	std::vector<Ghost*> ghosts;
 	Pacman pacman;
 	std::vector<std::string> mapArray;
 	void startGame();
 	void loadMap();
 	void distributeMapObjects();
 	void drawWalls(QPainter &painter, std::vector<QRect> &wallType, QPixmap image);
-	void drawWalls2(QPainter &painter, std::vector<std::shared_ptr<QRect>> &wallType, QPixmap image);
+	void drawWalls2(QPainter &painter, std::vector<std::shared_ptr<QRect>> &wallType, QPixmap &image);
 	void drawPoints(QPainter &painter);
 	void drawPacman(QPainter &painter);
+	void drawGhost(QPainter &painter, Ghost* ghost, QPixmap &image);
 	void handleSmallPointCollision();
 public:
 	explicit MyWidget(QWidget *parent = nullptr);
