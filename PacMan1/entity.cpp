@@ -35,15 +35,14 @@ void Entity::modifyNextMove()
 	}
 }
 
-void Entity::validateMoves(const std::vector<QRect*> &allWalls)
+void Entity::validateMoves(const std::vector<std::shared_ptr<QRect>> &allWalls)
 {
 	modifyNextMove();
 
-	for (QRect* wall : allWalls) {
+	for (auto wall : allWalls) {
 		if(nextMove.x() == wall->x() && nextMove.y() == wall->y()){
 			canMove = false;
 			return;
-
 		}
 	}
 	canMove = true;

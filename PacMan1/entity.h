@@ -3,6 +3,7 @@
 
 #include "consts.h"
 #include <iostream>
+#include <memory>
 #include <QWidget>
 
 class Entity: public QRect
@@ -20,7 +21,7 @@ public:
 	std::pair<short, short> direction_now;
 	QRect nextMove;
 	void move();
-	void validateMoves(const std::vector<QRect*> &allWalls);
+	void validateMoves(const std::vector<std::shared_ptr<QRect>> &allWalls);
 };
 
 #endif // ENTITY_H
