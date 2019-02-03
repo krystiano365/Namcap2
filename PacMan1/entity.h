@@ -11,6 +11,10 @@ class Entity: public QRect
 
 private:
 	bool determineCanMove();
+	void checkRotate(bool &canWhere, QRect &whereRect, std::shared_ptr<QRect> &wall);
+	void updateCollisionRects();
+	void changeDirection();
+
 protected:
 	explicit Entity(QRect rect);
 	virtual ~Entity() = default;
@@ -23,10 +27,8 @@ public:
 	std::pair<short, short> direction_next;
 	QRect stepForward;
 	QRect stepLeft, stepRight, stepDown, stepUp;
-	void updateCollisionRects();
 	void move();
 	void validateMoves(const std::vector<std::shared_ptr<QRect>> &allWalls);
-	void checkRotate(bool &canWhere, QRect &whereRect, std::shared_ptr<QRect> &wall);
 };
 
 #endif // ENTITY_H
