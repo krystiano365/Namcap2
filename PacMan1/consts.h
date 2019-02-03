@@ -14,8 +14,8 @@
 
 #define CURDIR ("/home/krystian/Documents/C++/qtcreator/PacMan1/")
 
-enum DIRECTION {
-	_LEFT, _RIGHT, _UP, _DOWN
+enum mode {
+	CHASE, RETREAT, WAIT
 };
 
 #define RIGHT std::pair<short, short>(TILE_W, 0)

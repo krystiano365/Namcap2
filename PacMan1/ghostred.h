@@ -8,7 +8,8 @@ class GhostRed : public Ghost
 {
 public:
 	GhostRed(QRect rect);
-	void changeDirection() override;
+	void pickNextDirection() override;
+	void chase() override;
 };
 
 #endif // GHOSTRED_H

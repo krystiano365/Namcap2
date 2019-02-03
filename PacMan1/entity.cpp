@@ -18,15 +18,20 @@ void Entity::changeDirection()
 
 bool Entity::determineCanMove()
 {
-	if(canRotateLeft && direction_now == LEFT)
+	if(canRotateLeft && direction_now == LEFT){
+		canMove = true;
 		return true;
-	else if(canRotateRight && direction_now == RIGHT)
+	} else if(canRotateRight && direction_now == RIGHT){
+		canMove = true;
 		return true;
-	else if(canRotateUp && direction_now == UP)
+	} else if(canRotateUp && direction_now == UP){
+		canMove = true;
 		return true;
-	else if(canRotateDown && direction_now == DOWN){
+	} else if(canRotateDown && direction_now == DOWN){
+		canMove = true;
 		return true;
 	}
+	canMove = false;
 	return false;
 }
 
@@ -46,6 +51,7 @@ void Entity::move() {
 	}
 
 	updateCollisionRects();
+
 }
 
 void Entity::updateCollisionRects() {
@@ -86,7 +92,7 @@ void Entity::validateMoves(const std::vector<std::shared_ptr<QRect>> &allWalls)
 //	std::cout<< "dir_next after: " << direction_next.first << ", " << direction_next.second << std::endl;
 
 
-//	std::cout << " UP: " << canRotateUp << " down: " << canRotateDown << " LEFT: " << canRotateLeft << " right: " << canRotateRight << " dir_now: "<< direction_now.first << ", " << direction_now.second<<  std::endl;
+	std::cout<< "CanMove: " << canMove << " UP: " << canRotateUp << " down: " << canRotateDown << " LEFT: " << canRotateLeft << " right: " << canRotateRight << " dir_now: "<< direction_now.first << ", " << direction_now.second<<  std::endl;
 
 }
 
@@ -95,14 +101,3 @@ void Entity::checkRotate(bool &canWhere, QRect &whereRect, std::shared_ptr<QRect
 		canWhere = false;
 	}
 }
-
-
-
-//void Entity::countFrames() {
-//	canMove = false;
-//	frameCounter++;
-//	if(frameCounter == ENTITY_SPEED){
-//		frameCounter = 0;
-//		canMove = true;
-//	}
-//}

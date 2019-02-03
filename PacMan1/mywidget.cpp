@@ -137,7 +137,7 @@ void MyWidget::paintEvent(QPaintEvent *){
 	drawWalls_all(painter);
 	drawPacman(painter);
 	for(Ghost* ghost : ghosts){
-		drawGhost(painter, ghost, image_wall);
+		drawGhost(painter, ghost, image_wall); 
 	}
 
 
@@ -153,6 +153,12 @@ void MyWidget::updateScreen(){
 	if(frameCounter == ENTITY_SPEED) {
 		frameCounter = 0;
 		handleSmallPointCollision();
+		for(Ghost* ghost: ghosts){
+			if(ghost->direction_next == NO_MOVE && !ghost->canMove)
+				ghost->pickNextDirection();
+			ghost->move();
+			ghost->validateMoves(allWalls);
+		}
 		pacman.move();
 		pacman.validateMoves(allWalls);
 	}
@@ -267,6 +273,13 @@ void MyWidget::debug_showCollisionRectangles(QPainter &painter)
 	debug_showCollisionRectangle(painter, pacman.canRotateDown, pacman.stepDown);
 	debug_showCollisionRectangle(painter, pacman.canRotateRight, pacman.stepRight);
 	debug_showCollisionRectangle(painter, pacman.canRotateLeft, pacman.stepLeft);
+
+	for (Ghost* ghost: ghosts){
+		debug_showCollisionRectangle(painter, ghost->canRotateUp, ghost->stepUp);
+		debug_showCollisionRectangle(painter, ghost->canRotateDown, ghost->stepDown);
+		debug_showCollisionRectangle(painter, ghost->canRotateRight, ghost->stepRight);
+		debug_showCollisionRectangle(painter, ghost->canRotateLeft, ghost->stepLeft);
+	}
 }
 
 void MyWidget::debug_showCollisionRectangle(QPainter &painter, bool &canRotateWhere, QRect &where)
