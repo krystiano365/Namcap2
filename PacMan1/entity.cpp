@@ -10,6 +10,18 @@ Entity::Entity(QRect rect) : QRect(rect)
 
 void Entity::changeDirection()
 {
+	if (canRotateUp && direction_next == UP){
+		changeDirNowIntoNext();
+	} else if (canRotateDown && direction_next == DOWN){
+		changeDirNowIntoNext();
+	} else if (canRotateRight && direction_next == RIGHT){
+		changeDirNowIntoNext();
+	} else if (canRotateLeft && direction_next == LEFT){
+		changeDirNowIntoNext();
+	}
+}
+
+void Entity::changeDirNowIntoNext(){
 	if(direction_next != NO_MOVE){
 		direction_now = direction_next;
 		direction_next = NO_MOVE;
@@ -37,6 +49,7 @@ bool Entity::determineCanMove()
 
 void Entity::move() {
 	//countFrames();
+	changeDirection();
 
 	if(determineCanMove()){
 		translate(direction_now.first, direction_now.second);
@@ -51,7 +64,6 @@ void Entity::move() {
 	}
 
 	updateCollisionRects();
-
 }
 
 void Entity::updateCollisionRects() {
@@ -79,20 +91,8 @@ void Entity::validateMoves(const std::vector<std::shared_ptr<QRect>> &allWalls)
 
 //	std::cout<< "dir_now before: " << direction_now.first << ", " << direction_now.second;
 //	std::cout<< " dir_next before: " << direction_next.first << ", " << direction_next.second << std::endl;
-	if (canRotateUp && direction_next == UP){
-		changeDirection();
-	} else if (canRotateDown && direction_next == DOWN){
-		changeDirection();
-	} else if (canRotateRight && direction_next == RIGHT){
-		changeDirection();
-	} else if (canRotateLeft && direction_next == LEFT){
-		changeDirection();
-	}
 //	std::cout<< "dir_now after: " << direction_now.first << ", " << direction_now.second;
 //	std::cout<< "dir_next after: " << direction_next.first << ", " << direction_next.second << std::endl;
-
-
-	std::cout<< "CanMove: " << canMove << " UP: " << canRotateUp << " down: " << canRotateDown << " LEFT: " << canRotateLeft << " right: " << canRotateRight << " dir_now: "<< direction_now.first << ", " << direction_now.second<<  std::endl;
 
 }
 

@@ -154,10 +154,16 @@ void MyWidget::updateScreen(){
 		frameCounter = 0;
 		handleSmallPointCollision();
 		for(Ghost* ghost: ghosts){
-			if(ghost->direction_next == NO_MOVE && !ghost->canMove)
+			if(ghost->direction_now == NO_MOVE)
 				ghost->pickNextDirection();
+
 			ghost->move();
 			ghost->validateMoves(allWalls);
+
+			if(ghost->direction_next == NO_MOVE)
+				ghost->pickNextDirection();
+
+			std::cout<< "CanMove: " << ghost->canMove << " UP: " << ghost->canRotateUp << " down: " << ghost->canRotateDown << " LEFT: " << ghost->canRotateLeft << " right: " << ghost->canRotateRight << " dir_now: "<< ghost->direction_now.first << ", " << ghost->direction_now.second<< " dir_next: "<< ghost->direction_next.first << ", " << ghost->direction_next.second<<  std::endl;
 		}
 		pacman.move();
 		pacman.validateMoves(allWalls);

@@ -10,9 +10,9 @@ class Ghost : public Entity
 protected:
 	int releaseTimer = 0;
 	int mode;
-	short randomize();
+	size_t randomize(size_t upperLimit);
 	std::vector<std::pair<short, short>> possibleDirections;
-	void fillPossibleDirections();
+	void fillPossibleNextDirections();
 	void clearPossibleDirections();
 public:
 	Ghost(QRect rect);
