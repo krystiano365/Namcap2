@@ -182,8 +182,8 @@ void MyWidget::updateScreen(){
 	if(frameCounter == ENTITY_SPEED) {
 		frameCounter = 0;
 		handleSmallPointCollision();
-		pacman.validateMoves(allWalls);
 		pacman.move();
+		pacman.validateMoves(allWalls);
 	}
 	this->update();
 }
@@ -191,31 +191,35 @@ void MyWidget::updateScreen(){
 void MyWidget::keyPressEvent(QKeyEvent *event){
 	switch (event->key()) {
 	case Qt::Key_Up:
-		std::cout<<"up"<<std::endl;
-		if (pacman.canRotateUp)
+		if (pacman.canRotateUp){
+			std::cout<<"up"<<std::endl;
 			pacman.direction_now = UP;
+		}
 		break;
 	case Qt::Key_Down:
-		std::cout<<"down"<<std::endl;
-		if (pacman.canRotateDown)
+		if (pacman.canRotateDown){
+			std::cout<<"down"<<std::endl;
 			pacman.direction_now = DOWN;
+		}
 		break;
 	case Qt::Key_Right:
-		std::cout<<"right"<<std::endl;
-		if (pacman.canRotateRight)
+		if (pacman.canRotateRight){
+			std::cout<<"right"<<std::endl;
 			pacman.direction_now = RIGHT;
+		}
 		break;
 	case Qt::Key_Left:
-		std::cout<<"left"<<std::endl;
-		if (pacman.canRotateLeft)
+		if (pacman.canRotateLeft){
+			std::cout<<"left"<<std::endl;
 			pacman.direction_now = LEFT;
+		}
 		break;
 	case Qt::Key_Space:
 		std::cout<<"stopped"<<std::endl;
 		pacman.direction_now = NO_MOVE;
 		break;
 	}
-
+	std::cout<< "catching moves finished"<<std::endl;
 }
 
 void MyWidget::drawWalls(QPainter &painter, std::vector<QRect> &wallType, QPixmap image){

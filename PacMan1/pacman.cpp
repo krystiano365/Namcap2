@@ -2,8 +2,10 @@
 
 Pacman::Pacman(QRect rect) : Entity(rect)
 {
+	direction_now = NO_MOVE;
+	direction_next = NO_MOVE;
 	isEatable = true;
-	canMove = false;
+//	canMove = false;
 }
 
 void Pacman::moveMouth()

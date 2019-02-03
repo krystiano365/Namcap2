@@ -3,7 +3,9 @@
 Ghost::Ghost(QRect rect) : Entity(rect)
 {
 	isEatable = false;
-	canMove = false;
+	direction_now = NO_MOVE;
+	direction_next = NO_MOVE;
+//	canMove = false;
 }
 
 void Ghost::turnEntity()

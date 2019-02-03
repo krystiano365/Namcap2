@@ -1,27 +1,31 @@
 #include "entity.h"
 
 
+
 Entity::Entity(QRect rect) : QRect(rect)
 {
-	direction_now = NO_MOVE;
-	stepForward = QRect(x(), y(), TILE_W, TILE_H);
 	stepLeft = stepRight = stepUp = stepDown = QRect(x(), y(), TILE_W, TILE_H);
+	updateCollisionRects();
+}
+
+bool Entity::determineCanMove()
+{
+	if(canRotateLeft && direction_now == LEFT)
+		return true;
+	if(canRotateRight && direction_now == RIGHT)
+		return true;
+	if(canRotateUp && direction_now == UP)
+		return true;
+	if(canRotateDown && direction_now == DOWN){
+		return true;
+	}
+	return false;
 }
 
 void Entity::move() {
 	//countFrames();
 
-	canMove = false;
-	if(canRotateLeft && direction_now == LEFT)
-		canMove = true;
-	if(canRotateRight && direction_now == RIGHT)
-		canMove = true;
-	if(canRotateUp && direction_now == UP)
-		canMove = true;
-	if(canRotateDown && direction_now == DOWN)
-		canMove = true;
-
-	if(canMove){
+	if(determineCanMove()){
 		translate(direction_now.first, direction_now.second);
 	}
 
@@ -31,32 +35,20 @@ void Entity::move() {
 	if(this->x() >= TILE_W*MAP_W){
 		this->translate(-TILE_W*(MAP_W), 0);
 	}
-}
 
-void Entity::modifyStepForward() // moves collision rectangle "stepForward"
-{
-	if (direction_now == LEFT) {
-		stepForward.moveTo(x() - TILE_W, y());
-	} else if (direction_now == RIGHT) {
-		stepForward.moveTo(x() + TILE_W, y());
-	} else if (direction_now == UP) {
-		stepForward.moveTo(x(), y() - TILE_H);
-	} else if (direction_now == DOWN) {
-		stepForward.moveTo(x(), y() + TILE_H);
-	}
+	updateCollisionRects();
 }
 
 void Entity::updateCollisionRects() {
-	stepUp.moveTo(x() - TILE_H, y());
-	stepDown.moveTo(x() + TILE_H, y());
-	stepLeft.moveTo(x(), y() - TILE_W);
-	stepRight.moveTo(x(), y() + TILE_W);
+	stepUp.moveTo(x(), y() - TILE_H);
+	stepDown.moveTo(x(), y() + TILE_H);
+	stepLeft.moveTo(x() - TILE_W, y());
+	stepRight.moveTo(x() + TILE_W, y());
 }
 
 void Entity::validateMoves(const std::vector<std::shared_ptr<QRect>> &allWalls)
 {
 
-	updateCollisionRects();
 	canRotateUp = canRotateDown = canRotateLeft = canRotateRight = true;
 	for (auto wall : allWalls) {
 		if (canRotateLeft)
@@ -70,15 +62,14 @@ void Entity::validateMoves(const std::vector<std::shared_ptr<QRect>> &allWalls)
 
 	}
 
-	if(canMove)
-		std::cout << "canmove" << canMove << " UP: " << canRotateUp << " down: " << canRotateDown << " LEFT: " << canRotateLeft << " right: " << canRotateRight << std::endl;
+
+	std::cout << " UP: " << canRotateUp << " down: " << canRotateDown << " LEFT: " << canRotateLeft << " right: " << canRotateRight << " dir_now: "<< direction_now.first << ", " << direction_now.second<<  std::endl;
 
 }
 
 void Entity::checkRotate(bool &canWhere, QRect &whereRect, std::shared_ptr<QRect> &wall) {
 	if(whereRect.x() == wall->x() && whereRect.y() == wall->y()){
 		canWhere = false;
-		std::cout<< "setting false" << std::endl;
 	}
 }
 
