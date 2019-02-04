@@ -1,7 +1,9 @@
 #ifndef CONSTS_H
 #define CONSTS_H
 
-#define FRAMERATE (100/6)
+#define FPS 60
+
+#define FRAMERATE (1000/FPS)
 #define MULTIPLIER 1	//slows down the movement
 #define PACMAN_SPEED (8 * MULTIPLIER) 		//lower = faster
 #define FRIGHTENED_GHOST_SPEED (12 * MULTIPLIER)	// in practice it only slows ghosts down twice
@@ -15,8 +17,8 @@
 #define SMALL_POINT_H 2		//original size
 #define BIG_POINT_R	4		//original size
 
-#define GHOST_REDEPLOYMENT_FRAMETIME 20	//game screen refreshes needed for ghost to redeploy
-#define GHOST_RETREAT_FRAMETIME 60		//time for which ghosts are eatable
+#define GHOST_REDEPLOYMENT_FRAMETIME 20	//game screen refreshes (actually FRAMETIME is the number of PACMAN's frames/steps) needed for ghost to redeploy
+#define GHOST_RETREAT_TIME 5*FPS		//time for which ghosts are eatable
 
 #define POINT_OF_GHOST_SPAWN QPoint(13*TILE_W, 14*TILE_H)
 

@@ -19,6 +19,7 @@ MyWidget::~MyWidget()
 }
 
 void MyWidget::startGame() {
+	stop = false;
 	hasReleasingEnded = false;
 	isRetreatActive = false;
 	releaseGhostsCounter = 0;
@@ -32,6 +33,11 @@ void MyWidget::startGame() {
 	initializeContainers();
 	distributeMapObjects();
 	timer->start(FRAMERATE);
+}
+
+void MyWidget::stopGame()
+{
+	stop = true;
 }
 
 void MyWidget::loadMap(){
@@ -124,23 +130,20 @@ void MyWidget::distributeMapObjects() {
 		}
 	}
 
-//	for(auto& wall : walls_horizontal)
-//		allWalls.push_back(&(wall));
-
-//	for(size_t size = 0; size < walls_horizontal.size();size++)
-//		allWalls.push_back(&walls_horizontal.at(size));
-
 }
 
 
 void MyWidget::paintEvent(QPaintEvent *){
 	QPainter painter(this);
-	painter.setPen(Qt::NoPen);
+	painter.setPen(Qt::yellow);
 
 
 	drawPoints(painter);
 	drawWalls_all(painter);
 	drawGates(painter, image_gates);
+	if(stop){
+		drawGameOver(painter);
+	}
 	drawPacman(painter);
 	for(Ghost* ghost : ghosts){
 		drawGhost(painter, ghost, ghost->image, image_wall);
@@ -155,28 +158,31 @@ void MyWidget::paintEvent(QPaintEvent *){
 }
 
 void MyWidget::updateScreen(){
-
-	for(Ghost* ghost: ghosts){
-		ghost->getMode()==RETREAT ? ghost->ghostSpeed=FRIGHTENED_GHOST_SPEED : ghost->ghostSpeed = NORMAL_GHOST_SPEED;
-		ghost->frameCounter++;
-		moveGhost(ghost);
-		for(Ghost* ghost : ghosts)
-			handleGhostCollision(ghost);
-	}
-
-	frameCounter++;
-	if(frameCounter == PACMAN_SPEED) {
-		frameCounter = 0;
-		for (Ghost* ghost : ghosts){
-			std::cout<< "CanMove: " << ghost->canMove << " UP: " << ghost->canRotateUp << " down: " << ghost->canRotateDown << " LEFT: " << ghost->canRotateLeft << " right: " << ghost->canRotateRight << " dir_now: "<< ghost->direction_now.first << ", " << ghost->direction_now.second<< " dir_next: "<< ghost->direction_next.first << ", " << ghost->direction_next.second<<  std::endl;
-
-			if (ghost->hasAlreadyBeenReleased && ghost->getMode() == WAIT){
-				ghost->redeploymentTimeCounter++;		//increasing ghost's redeployment counter (due to pacman's step speed)
-			}
+	if (!stop){
+		for(Ghost* ghost: ghosts){
+			ghost->getMode()==RETREAT ? ghost->ghostSpeed=FRIGHTENED_GHOST_SPEED : ghost->ghostSpeed = NORMAL_GHOST_SPEED;
+			ghost->frameCounter++;
+			moveGhost(ghost);
 		}
-		movePacman();
+
+		frameCounter++;
+		if(frameCounter == PACMAN_SPEED) {
+			frameCounter = 0;
+			for (Ghost* ghost : ghosts){
+				std::cout<< "CanMove: " << ghost->canMove << " UP: " << ghost->canRotateUp << " down: " << ghost->canRotateDown << " LEFT: " << ghost->canRotateLeft << " right: " << ghost->canRotateRight << " dir_now: "<< ghost->direction_now.first << ", " << ghost->direction_now.second<< " dir_next: "<< ghost->direction_next.first << ", " << ghost->direction_next.second<<  std::endl;
+
+				if (ghost->hasAlreadyBeenReleased && ghost->getMode() == WAIT){
+					ghost->redeploymentTimeCounter++;		//increasing ghost's redeployment counter (due to pacman's step speed)
+				}
+			}
+			movePacman();
+			std::cout << retreatFrameTimeCounter << std::endl;
+		}
 		handleSmallPointCollision();
 		handleBigPointCollision();
+		checkAndHandleGhostRetreatActions();
+		for(Ghost* ghost : ghosts)
+			handleGhostCollision(ghost);
 	}
 	this->update();
 }
@@ -298,6 +304,21 @@ void MyWidget::drawGhost(QPainter &painter, Ghost* ghost, QPixmap &image_chase, 
 	}
 }
 
+void MyWidget::drawGameOver(QPainter &painter)
+{
+	painter.setPen(Qt::red);
+	QFont newFont("Helvetica", 12, QFont::Bold);
+	painter.setFont(newFont);
+	painter.drawText(QRect(10*TILE_W, 20*TILE_H, TILE_W, TILE_H), "G");
+	painter.drawText(QRect(11*TILE_W, 20*TILE_H, TILE_W, TILE_H), "A");
+	painter.drawText(QRect(12*TILE_W, 20*TILE_H, TILE_W, TILE_H), "M");
+	painter.drawText(QRect(13*TILE_W, 20*TILE_H, TILE_W, TILE_H), "E");
+	painter.drawText(QRect(14*TILE_W, 20*TILE_H, TILE_W, TILE_H), "O");
+	painter.drawText(QRect(15*TILE_W, 20*TILE_H, TILE_W, TILE_H), "V");
+	painter.drawText(QRect(16*TILE_W, 20*TILE_H, TILE_W, TILE_H), "E");
+	painter.drawText(QRect(17*TILE_W, 20*TILE_H, TILE_W, TILE_H), "R");
+}
+
 void MyWidget::releaseGhosts(Ghost* ghost)
 {
 	if (ghost->getMode() == WAIT){
@@ -361,8 +382,9 @@ void MyWidget::handleBigPointCollision()
 {
 	for(QPoint& point: bigPoints){
 		if (pacman.contains(point)){
-			bigPoints.remove(point);
 			isRetreatActive = true;
+			retreatFrameTimeCounter = 0;
+			bigPoints.remove(point);
 			for (Ghost* ghost : ghosts){
 				if(ghost->getMode() == CHASE){
 					ghost->changeMode(RETREAT);
@@ -377,18 +399,38 @@ void MyWidget::handleBigPointCollision()
 
 void MyWidget::handleGhostCollision(Ghost *ghost)
 {
-	if (pacman.intersects(*ghost) || pacman.intersects(ghost->previousPosition))
+	if(pacman.intersects(*ghost) || pacman.intersects(ghost->previousPosition)) {
 		if (ghost->isEatable){
 			ghost->isEatable = false;
 			ghost->direction_now = UP;
 			ghost->direction_next = NO_MOVE;
-			//std::cout << "teleported" << std::endl;
 			ghost->moveTo(ghost->initialPosition);
 			ghost->updateCollisionRects();
 			ghost->changeMode(WAIT);
-			std::cout << "-------GHOST CAUGHT!" << std::endl;
 			ghost->redeploymentTimeCounter = 0;
+		} else {
+			stopGame();
 		}
+	}
+}
+
+void MyWidget::checkAndHandleGhostRetreatActions()
+{
+	//for(Ghost* ghost: ghosts)
+	//std::cout<< "isEatable" << ghost->isEatable <<  std::endl;
+	if (isRetreatActive) {
+		retreatFrameTimeCounter++;
+		if (retreatFrameTimeCounter == GHOST_RETREAT_TIME) {
+			retreatFrameTimeCounter = 0;
+			for(Ghost* ghost: ghosts){
+				if(ghost->getMode() == RETREAT){
+					ghost->changeMode(CHASE);
+					ghost->isEatable = false;
+				}
+			}
+			isRetreatActive = false;
+		}
+	}
 }
 
 

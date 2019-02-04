@@ -15,13 +15,13 @@
 #include <QPixmap>
 
 
-
 class MyWidget : public QWidget
 {
 	Q_OBJECT
 private:
 	QTimer *timer;
 	bool hasReleasingEnded;
+	bool stop;
 	int frameCounter;
 	int releaseGhostsCounter;
 	int retreatFrameTimeCounter;
@@ -41,6 +41,7 @@ private:
 	Pacman pacman;
 	std::vector<std::string> mapArray;
 	void startGame();
+	void stopGame();
 	void loadMap();
 	void distributeMapObjects();
 	void openImages();
@@ -52,12 +53,14 @@ private:
 	void drawPoints(QPainter &painter);
 	void drawPacman(QPainter &painter);
 	void drawGhost(QPainter &painter, Ghost* ghost,  QPixmap &image_chase, QPixmap &image_retreat);
+	void drawGameOver(QPainter & painter);
 	void releaseGhosts(Ghost* ghost);
 	void movePacman();
 	void moveGhost(Ghost* ghost);
 	void handleSmallPointCollision();
 	void handleBigPointCollision();
 	void handleGhostCollision(Ghost *ghost);
+	void checkAndHandleGhostRetreatActions();
 
 	//==========debugging options======
 	void debug_showCollisionRectangles(QPainter &painter);

@@ -5,7 +5,7 @@ GhostRed::GhostRed(QRect rect) : Ghost(rect)
 	mode = WAIT;
 	direction_now = UP;
 	image = loadPixmap("utils/wall_knee.bmp");
-	releaseScore = 5;
+	releaseScore = 8;
 }
 
 void GhostRed::pickNextDirection()
