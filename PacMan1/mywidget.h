@@ -22,8 +22,10 @@ class MyWidget : public QWidget
 private:
 	QTimer *timer;
 	bool hasReleasingEnded;
-	int frameCounter = 0;
-	int releaseGhostsCounter = 0;
+	int frameCounter;
+	int releaseGhostsCounter;
+	int retreatFrameTimeCounter;
+	bool isRetreatActive;
 	QPixmap image_wall, image_wall_knee, image_gates;
 	std::vector<QRect> walls_horizontal;
 	std::vector<QRect> walls_vertical;
@@ -51,6 +53,8 @@ private:
 	void drawPacman(QPainter &painter);
 	void drawGhost(QPainter &painter, Ghost* ghost,  QPixmap &image_chase, QPixmap &image_retreat);
 	void releaseGhosts(Ghost* ghost);
+	void movePacman();
+	void moveGhost(Ghost* ghost);
 	void handleSmallPointCollision();
 	void handleBigPointCollision();
 	void handleGhostCollision(Ghost *ghost);

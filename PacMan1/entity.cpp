@@ -63,7 +63,6 @@ void Entity::move() {
 		this->translate(-TILE_W*(MAP_W), 0);
 	}
 
-	updateCollisionRects();	//changes position of collision rectangles according to current position of entity.
 }
 
 void Entity::updateCollisionRects() {

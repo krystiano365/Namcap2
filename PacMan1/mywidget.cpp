@@ -20,7 +20,10 @@ MyWidget::~MyWidget()
 
 void MyWidget::startGame() {
 	hasReleasingEnded = false;
+	isRetreatActive = false;
 	releaseGhostsCounter = 0;
+	frameCounter = 0;
+	retreatFrameTimeCounter = 0;
 	mapArray = std::vector<std::string>();
 	pacman = Pacman(QRect());
 
@@ -152,50 +155,26 @@ void MyWidget::paintEvent(QPaintEvent *){
 }
 
 void MyWidget::updateScreen(){
-	frameCounter++;
-	if(frameCounter == ENTITY_SPEED) {
-		frameCounter = 0;
 
-		for(Ghost* ghost: ghosts){
-			std::cout<< "CanMove: " << ghost->canMove << " UP: " << ghost->canRotateUp << " down: " << ghost->canRotateDown << " LEFT: " << ghost->canRotateLeft << " right: " << ghost->canRotateRight << " dir_now: "<< ghost->direction_now.first << ", " << ghost->direction_now.second<< " dir_next: "<< ghost->direction_next.first << ", " << ghost->direction_next.second<<  std::endl;
-			if(ghost->direction_now == NO_MOVE)
-				ghost->pickNextDirection();
-
-			if (ghost->hasAlreadyBeenReleased && ghost->getMode() == WAIT){
-				ghost->redeploymentTimeCounter++;
-				if (ghost->redeploymentTimeCounter == GHOST_REDEPLOYMENT_FRAMETIME)
-					releaseGhosts(ghost);
-
-			}
-
-			std::cout<<ghost->redeploymentTimeCounter <<std::endl;
-
-			if (!hasReleasingEnded && ghost->releaseScore == releaseGhostsCounter ){
-				releaseGhosts(ghost);
-				ghost->hasAlreadyBeenReleased = true;
-			}
-
-			ghost->previousPosition = *ghost;
-			ghost->move();
-			ghost->validateMoves(allWalls);	//checks all the collision rectangles
-
-
-			if(ghost->direction_next == NO_MOVE){
-				std::cout << "picked next dir" << std::endl;
-				ghost->pickNextDirection();
-
-			}
-
-
-		}
-
-
-		pacman.move();
-		pacman.validateMoves(allWalls);
-
+	for(Ghost* ghost: ghosts){
+		ghost->getMode()==RETREAT ? ghost->ghostSpeed=FRIGHTENED_GHOST_SPEED : ghost->ghostSpeed = NORMAL_GHOST_SPEED;
+		ghost->frameCounter++;
+		moveGhost(ghost);
 		for(Ghost* ghost : ghosts)
 			handleGhostCollision(ghost);
+	}
 
+	frameCounter++;
+	if(frameCounter == PACMAN_SPEED) {
+		frameCounter = 0;
+		for (Ghost* ghost : ghosts){
+			std::cout<< "CanMove: " << ghost->canMove << " UP: " << ghost->canRotateUp << " down: " << ghost->canRotateDown << " LEFT: " << ghost->canRotateLeft << " right: " << ghost->canRotateRight << " dir_now: "<< ghost->direction_now.first << ", " << ghost->direction_now.second<< " dir_next: "<< ghost->direction_next.first << ", " << ghost->direction_next.second<<  std::endl;
+
+			if (ghost->hasAlreadyBeenReleased && ghost->getMode() == WAIT){
+				ghost->redeploymentTimeCounter++;		//increasing ghost's redeployment counter (due to pacman's step speed)
+			}
+		}
+		movePacman();
 		handleSmallPointCollision();
 		handleBigPointCollision();
 	}
@@ -331,6 +310,41 @@ void MyWidget::releaseGhosts(Ghost* ghost)
 	}
 }
 
+void MyWidget::movePacman()
+{
+	pacman.move();
+	pacman.updateCollisionRects();
+	pacman.validateMoves(allWalls);
+}
+
+void MyWidget::moveGhost(Ghost *ghost)
+{
+	if(ghost->direction_now == NO_MOVE){
+		ghost->pickNextDirection();
+	}
+
+
+	if (ghost->redeploymentTimeCounter == GHOST_REDEPLOYMENT_FRAMETIME)
+		releaseGhosts(ghost);
+
+	if (!hasReleasingEnded && ghost->releaseScore == releaseGhostsCounter ){
+		releaseGhosts(ghost);
+		ghost->hasAlreadyBeenReleased = true;
+	}
+
+	ghost->previousPosition = *ghost;
+	if (ghost->frameCounter >= ghost->ghostSpeed) {		//delays ghost's movement
+		ghost->frameCounter = 0;
+		ghost->move();
+	}
+	ghost->updateCollisionRects();
+	ghost->validateMoves(allWalls);	//checks all the collision rectangles
+
+	if(ghost->direction_next == NO_MOVE){
+		ghost->pickNextDirection();
+	}
+}
+
 void MyWidget::handleSmallPointCollision() {
 
 	for(QRect& point : points) {
@@ -348,6 +362,7 @@ void MyWidget::handleBigPointCollision()
 	for(QPoint& point: bigPoints){
 		if (pacman.contains(point)){
 			bigPoints.remove(point);
+			isRetreatActive = true;
 			for (Ghost* ghost : ghosts){
 				if(ghost->getMode() == CHASE){
 					ghost->changeMode(RETREAT);
@@ -369,7 +384,9 @@ void MyWidget::handleGhostCollision(Ghost *ghost)
 			ghost->direction_next = NO_MOVE;
 			//std::cout << "teleported" << std::endl;
 			ghost->moveTo(ghost->initialPosition);
+			ghost->updateCollisionRects();
 			ghost->changeMode(WAIT);
+			std::cout << "-------GHOST CAUGHT!" << std::endl;
 			ghost->redeploymentTimeCounter = 0;
 		}
 }

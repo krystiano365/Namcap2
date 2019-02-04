@@ -12,7 +12,6 @@ class Entity: public QRect
 private:
 	bool determineCanMove();
 	void checkRotate(bool &canWhere, QRect &whereRect, std::shared_ptr<QRect> &wall);
-	void updateCollisionRects();
 	void changeDirNowIntoNext();
 protected:
 	explicit Entity(QRect rect);
@@ -29,6 +28,7 @@ public:
 	void move();
 	void validateMoves(const std::vector<std::shared_ptr<QRect>> &allWalls);
 	void changeDirection();
+	void updateCollisionRects();	//changes position of collision rectangles according to current position of entity.
 };
 
 #endif // ENTITY_H

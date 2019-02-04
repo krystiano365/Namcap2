@@ -20,7 +20,8 @@ protected:
 	void wait();
 	void retreat();
 public:
-	int redeploymentTimeCounter = 0, ghostFrameCounter = 0;
+	int redeploymentTimeCounter = 0;
+	short ghostSpeed, frameCounter = 0;
 	bool hasAlreadyBeenReleased;
 	int releaseScore;
 	QPoint initialPosition;
