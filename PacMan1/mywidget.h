@@ -21,14 +21,17 @@ class MyWidget : public QWidget
 	Q_OBJECT
 private:
 	QTimer *timer;
+	bool hasReleasingEnded;
 	int frameCounter = 0;
-	QPixmap image_wall, image_wall_knee;
+	int releaseGhostsCounter = 0;
+	QPixmap image_wall, image_wall_knee, image_gates;
 	std::vector<QRect> walls_horizontal;
 	std::vector<QRect> walls_vertical;
 	std::vector<QRect> walls_1;
 	std::vector<QRect> walls_2;
 	std::vector<QRect> walls_3;
 	std::vector<QRect> walls_4;
+	std::vector<QRect> gates;
 	std::vector<std::shared_ptr<QRect>> allWalls;
 	std::list<QRect> points;
 	std::list<QPoint> bigPoints;
@@ -39,9 +42,11 @@ private:
 	void loadMap();
 	void distributeMapObjects();
 	void openImages();
+	void initializeContainers();
 	void drawWalls_ref(QPainter &painter, std::vector<QRect> &wallType, QPixmap &image);
 	void drawWalls_cpy(QPainter &painter, std::vector<QRect> &wallType, QPixmap image);
 	void drawWalls_all(QPainter &painter);
+	void drawGates(QPainter &painter, QPixmap &image);
 	void drawPoints(QPainter &painter);
 	void drawPacman(QPainter &painter);
 	void drawGhost(QPainter &painter, Ghost* ghost, QPixmap &image);

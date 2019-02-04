@@ -8,6 +8,8 @@ MyWidget::MyWidget(QWidget *parent) : QWidget(parent), pacman(QRect())
 {
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(updateScreen()));
+
+
 	startGame();
 }
 
@@ -17,20 +19,13 @@ MyWidget::~MyWidget()
 }
 
 void MyWidget::startGame() {
-	walls_horizontal = std::vector<QRect>();
-	walls_vertical = std::vector<QRect>();
-	walls_1 = std::vector<QRect>();
-	walls_2 = std::vector<QRect>();
-	walls_3 = std::vector<QRect>();
-	walls_4 = std::vector<QRect>();
-	allWalls = std::vector<std::shared_ptr<QRect>>();
-	points = std::list<QRect>();
-	bigPoints = std::list<QPoint>();
-	ghosts = std::vector<Ghost*>();
-	//ghosts.reserve(4);
+	hasReleasingEnded = false;
+	mapArray = std::vector<std::string>();
+	pacman = Pacman(QRect());
 
 	loadMap();
 	openImages();
+	initializeContainers();
 	distributeMapObjects();
 	timer->start(FRAMERATE);
 }
@@ -87,6 +82,11 @@ void MyWidget::distributeMapObjects() {
 				walls_vertical.push_back(*ptr);
 				allWalls.push_back(ptr);		// here i use pointers to walls to store all walltypes in one container to easily iterate after all possible walls
 				break;
+			case '-':	//gate
+				ptr = std::make_shared<QRect>(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H);
+				gates.push_back(*ptr);
+				allWalls.push_back(ptr);
+				break;
 			case '.':	//point
 				points.push_back(QRect(int(c)*TILE_W + TILE_W/2 - SMALL_POINT_W/2,
 										int(r)*TILE_H + TILE_H/2 - SMALL_POINT_H/2, SMALL_POINT_W, SMALL_POINT_H));
@@ -121,23 +121,18 @@ void MyWidget::distributeMapObjects() {
 
 }
 
-void MyWidget::openImages()
-{
-	image_wall = QPixmap(QString(CURDIR).append("utils/wall_horizontal.bmp"));
-	image_wall_knee = QPixmap(QString(CURDIR).append("utils/wall_knee.bmp"));
-}
 
 void MyWidget::paintEvent(QPaintEvent *){
 	QPainter painter(this);
 	painter.setPen(Qt::NoPen);
-	painter.setBrush(Qt::red);
 
 
 	drawPoints(painter);
 	drawWalls_all(painter);
+	drawGates(painter, image_gates);
 	drawPacman(painter);
 	for(Ghost* ghost : ghosts){
-		drawGhost(painter, ghost, image_wall); 
+		drawGhost(painter, ghost, ghost->image);
 	}
 
 
@@ -152,6 +147,19 @@ void MyWidget::updateScreen(){
 	frameCounter++;
 	if(frameCounter == ENTITY_SPEED) {
 		frameCounter = 0;
+		if (!hasReleasingEnded){
+			releaseGhostsCounter++;
+			for (Ghost* ghost : ghosts) {
+				if (ghost->releaseTimer == releaseGhostsCounter ){
+					if (ghost->getMode() == WAIT){
+						ghost->changeMode(CHASE);
+						ghost->moveTo(POINT_OF_GHOST_SPAWN);
+					} else {
+						hasReleasingEnded = true;
+					}
+				}
+			}
+		}
 		handleSmallPointCollision();
 		for(Ghost* ghost: ghosts){
 			if(ghost->direction_now == NO_MOVE)
@@ -193,8 +201,39 @@ void MyWidget::keyPressEvent(QKeyEvent *event){
 		std::cout<<"stopped"<<std::endl;
 		pacman.direction_now = NO_MOVE;
 		break;
+	case Qt::Key_Escape:
+		startGame();
 	}
 	std::cout<< "catching moves finished"<<std::endl;
+}
+
+void MyWidget::openImages()
+{
+	try {
+		image_wall = QPixmap(QString(CURDIR).append("utils/wall_horizontal.bmp"));
+		image_wall_knee = QPixmap(QString(CURDIR).append("utils/wall_knee.bmp"));
+		image_gates = QPixmap(QString(CURDIR).append("utils/wall_knee.bmp"));
+	} catch (std::exception &e) {
+		std::cout<< e.what() << std::endl;
+		abort();
+	}
+}
+
+void MyWidget::initializeContainers()
+{
+
+	walls_horizontal = std::vector<QRect>();
+	walls_vertical = std::vector<QRect>();
+	walls_1 = std::vector<QRect>();
+	walls_2 = std::vector<QRect>();
+	walls_3 = std::vector<QRect>();
+	walls_4 = std::vector<QRect>();
+	gates = std::vector<QRect>();
+	allWalls = std::vector<std::shared_ptr<QRect>>();
+	points = std::list<QRect>();
+	bigPoints = std::list<QPoint>();
+	ghosts = std::vector<Ghost*>();
+	//ghosts.reserve(4);
 }
 
 void MyWidget::drawWalls_ref(QPainter &painter, std::vector<QRect> &wallType, QPixmap &image){
@@ -223,6 +262,12 @@ void MyWidget::drawWalls_all(QPainter &painter)
 	rotation.rotate(270);
 	drawWalls_cpy(painter, walls_4, image_wall_knee.transformed(rotation));
 
+}
+
+void MyWidget::drawGates(QPainter &painter, QPixmap &image){
+	for(QRect rect : gates){
+		painter.drawPixmap(rect, image);
+	}
 }
 
 void MyWidget::drawPoints(QPainter &painter){

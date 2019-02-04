@@ -12,6 +12,8 @@
 #define SMALL_POINT_H 2		//original size
 #define BIG_POINT_R	4		//original size
 
+#define POINT_OF_GHOST_SPAWN QPoint(15*TILE_W, 15*TILE_H)
+
 #define CURDIR ("/home/krystian/Documents/C++/qtcreator/PacMan1/")
 
 enum mode {

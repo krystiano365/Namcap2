@@ -2,8 +2,9 @@
 
 GhostRed::GhostRed(QRect rect) : Ghost(rect)
 {
-	mode = CHASE;
-		direction_now = NO_MOVE;
+	mode = WAIT;
+	image = loadPixmap("utils/wall_knee.bmp");
+	direction_now = UP;
 	releaseTimer = 0;
 }
 

@@ -32,13 +32,36 @@ void Ghost::clearPossibleDirections()
 	possibleDirections.clear();
 }
 
+QPixmap Ghost::loadPixmap(QString path)
+{
+	try {
+		QPixmap image_ = QPixmap(QString(CURDIR).append(path));
+		return image_;
+	} catch (std::exception &e) {
+		std::cout << e.what() << std::endl;
+		abort();
+	}
+}
+
 void Ghost::turnEntity()
 {
 
 }
 
+void Ghost::changeMode(enum::mode intoMode)
+{
+	mode = intoMode;
+}
+
+enum::mode Ghost::getMode()
+{
+	return mode;
+}
+
 void Ghost::wait()
 {
+	if (!canMove)
+		direction_next = {direction_now.first * (-1), direction_now.second * (-1)};
 
 }
 
