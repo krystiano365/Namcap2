@@ -2,7 +2,8 @@
 #define CONSTS_H
 
 #define FRAMERATE (100/6)
-#define ENTITY_SPEED 16		//lower = faster
+#define ENTITY_SPEED 8		//lower = faster
+#define FRIGHTENED_GHOST_SPEED 16
 
 #define TILE_W 16			//original size x2
 #define TILE_H 16			//original size x2
@@ -12,7 +13,9 @@
 #define SMALL_POINT_H 2		//original size
 #define BIG_POINT_R	4		//original size
 
-#define POINT_OF_GHOST_SPAWN QPoint(13*TILE_W, 0*TILE_H)
+#define GHOST_REDEPLOYMENT_FRAMETIME 20	//game screen refreshes needed for ghost to redeploy
+
+#define POINT_OF_GHOST_SPAWN QPoint(13*TILE_W, 14*TILE_H)
 
 #define CURDIR ("/home/krystian/Documents/C++/qtcreator/PacMan1/")
 

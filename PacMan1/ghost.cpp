@@ -3,6 +3,7 @@
 Ghost::Ghost(QRect rect) : Entity(rect)
 {
 	isEatable = false;
+	hasAlreadyBeenReleased = false;
 	direction_next = NO_MOVE;
 }
 
@@ -67,6 +68,10 @@ void Ghost::wait()
 
 void Ghost::retreat()
 {
+	size_t random;
+	random = randomize(possibleDirections.size());
+
+	direction_next = possibleDirections.at(random - 1);
 
 }
 

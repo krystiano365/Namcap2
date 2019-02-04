@@ -17,8 +17,14 @@ protected:
 	void fillPossibleNextDirections();
 	void clearPossibleDirections();
 	QPixmap loadPixmap(QString path);
+	void wait();
+	void retreat();
 public:
-	int releaseTimer;
+	int redeploymentTimeCounter = 0, ghostFrameCounter = 0;
+	bool hasAlreadyBeenReleased;
+	int releaseScore;
+	QPoint initialPosition;
+	QRect previousPosition;
 	QPixmap image;
 	Ghost(QRect rect);
 	void turnEntity() override;
@@ -26,8 +32,6 @@ public:
 	virtual void chase() = 0;
 	void changeMode(enum::mode intoMode);
 	enum::mode getMode();
-	void wait();
-	void retreat();
 
 };
 

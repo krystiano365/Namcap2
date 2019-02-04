@@ -49,10 +49,11 @@ private:
 	void drawGates(QPainter &painter, QPixmap &image);
 	void drawPoints(QPainter &painter);
 	void drawPacman(QPainter &painter);
-	void drawGhost(QPainter &painter, Ghost* ghost, QPixmap &image);
-	void releaseGhosts();
+	void drawGhost(QPainter &painter, Ghost* ghost,  QPixmap &image_chase, QPixmap &image_retreat);
+	void releaseGhosts(Ghost* ghost);
 	void handleSmallPointCollision();
 	void handleBigPointCollision();
+	void handleGhostCollision(Ghost *ghost);
 
 	//==========debugging options======
 	void debug_showCollisionRectangles(QPainter &painter);

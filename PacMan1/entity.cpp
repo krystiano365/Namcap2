@@ -48,7 +48,7 @@ bool Entity::determineCanMove()
 }
 
 void Entity::move() {
-	//countFrames();
+
 	changeDirection();
 
 	if(determineCanMove()){
@@ -63,7 +63,7 @@ void Entity::move() {
 		this->translate(-TILE_W*(MAP_W), 0);
 	}
 
-	updateCollisionRects();
+	updateCollisionRects();	//changes position of collision rectangles according to current position of entity.
 }
 
 void Entity::updateCollisionRects() {
@@ -88,11 +88,6 @@ void Entity::validateMoves(const std::vector<std::shared_ptr<QRect>> &allWalls)
 			checkRotate(canRotateDown , stepDown , wall);
 
 	}
-
-//	std::cout<< "dir_now before: " << direction_now.first << ", " << direction_now.second;
-//	std::cout<< " dir_next before: " << direction_next.first << ", " << direction_next.second << std::endl;
-//	std::cout<< "dir_now after: " << direction_now.first << ", " << direction_now.second;
-//	std::cout<< "dir_next after: " << direction_next.first << ", " << direction_next.second << std::endl;
 
 }
 

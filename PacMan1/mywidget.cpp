@@ -48,7 +48,7 @@ void MyWidget::loadMap(){
 
 void MyWidget::distributeMapObjects() {
 	std::shared_ptr<QRect> ptr = nullptr; // pointer to wall
-
+	Ghost* ghostBack = nullptr;
 	for(unsigned int c = 0; c < mapArray.at(0).size(); c++){
 		for(unsigned int r = 0; r < mapArray.size(); r++){
 			switch (mapArray[r][c]){
@@ -100,15 +100,22 @@ void MyWidget::distributeMapObjects() {
 				break;
 			case 'a':
 				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
+				ghostBack = ghosts.back();
+				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
 			case 'b':
 				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
+				ghostBack = ghosts.back();
+				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
 			case 'd':
 				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
-				break;
+				ghostBack = ghosts.back();
+				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};break;
 			case 'e':
 				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
+				ghostBack = ghosts.back();
+				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
 			}
 		}
@@ -133,12 +140,12 @@ void MyWidget::paintEvent(QPaintEvent *){
 	drawGates(painter, image_gates);
 	drawPacman(painter);
 	for(Ghost* ghost : ghosts){
-		drawGhost(painter, ghost, ghost->image);
+		drawGhost(painter, ghost, ghost->image, image_wall);
 	}
 
 
 //	debug_drawWallsFromAllWallsVector(painter, allWalls, image_wall);
-	debug_showCollisionRectangles(painter);
+//	debug_showCollisionRectangles(painter);
 
 //	std::cout << pacman.x() << ", " << pacman.y() << std::endl;             // print pacman's coordinates
 
@@ -148,24 +155,49 @@ void MyWidget::updateScreen(){
 	frameCounter++;
 	if(frameCounter == ENTITY_SPEED) {
 		frameCounter = 0;
-		if (!hasReleasingEnded){
-			releaseGhosts();
-		}
-		handleSmallPointCollision();
+
 		for(Ghost* ghost: ghosts){
+			std::cout<< "CanMove: " << ghost->canMove << " UP: " << ghost->canRotateUp << " down: " << ghost->canRotateDown << " LEFT: " << ghost->canRotateLeft << " right: " << ghost->canRotateRight << " dir_now: "<< ghost->direction_now.first << ", " << ghost->direction_now.second<< " dir_next: "<< ghost->direction_next.first << ", " << ghost->direction_next.second<<  std::endl;
 			if(ghost->direction_now == NO_MOVE)
 				ghost->pickNextDirection();
 
-			ghost->move();
-			ghost->validateMoves(allWalls);
+			if (ghost->hasAlreadyBeenReleased && ghost->getMode() == WAIT){
+				ghost->redeploymentTimeCounter++;
+				if (ghost->redeploymentTimeCounter == GHOST_REDEPLOYMENT_FRAMETIME)
+					releaseGhosts(ghost);
 
-			if(ghost->direction_next == NO_MOVE)
+			}
+
+			std::cout<<ghost->redeploymentTimeCounter <<std::endl;
+
+			if (!hasReleasingEnded && ghost->releaseScore == releaseGhostsCounter ){
+				releaseGhosts(ghost);
+				ghost->hasAlreadyBeenReleased = true;
+			}
+
+			ghost->previousPosition = *ghost;
+			ghost->move();
+			ghost->validateMoves(allWalls);	//checks all the collision rectangles
+
+
+			if(ghost->direction_next == NO_MOVE){
+				std::cout << "picked next dir" << std::endl;
 				ghost->pickNextDirection();
 
-			std::cout<< "CanMove: " << ghost->canMove << " UP: " << ghost->canRotateUp << " down: " << ghost->canRotateDown << " LEFT: " << ghost->canRotateLeft << " right: " << ghost->canRotateRight << " dir_now: "<< ghost->direction_now.first << ", " << ghost->direction_now.second<< " dir_next: "<< ghost->direction_next.first << ", " << ghost->direction_next.second<<  std::endl;
+			}
+
+
 		}
+
+
 		pacman.move();
 		pacman.validateMoves(allWalls);
+
+		for(Ghost* ghost : ghosts)
+			handleGhostCollision(ghost);
+
+		handleSmallPointCollision();
+		handleBigPointCollision();
 	}
 	this->update();
 }
@@ -279,24 +311,23 @@ void MyWidget::drawPacman(QPainter &painter){
 
 }
 
-void MyWidget::drawGhost(QPainter &painter, Ghost* ghost, QPixmap &image){
-	painter.setBrush(Qt::red);
-	painter.drawPixmap(*ghost, image);
+void MyWidget::drawGhost(QPainter &painter, Ghost* ghost, QPixmap &image_chase, QPixmap &image_retreat){
+	if (ghost->getMode() == CHASE || ghost->getMode() == WAIT)
+		painter.drawPixmap(*ghost, image_chase);
+	else {
+		painter.drawPixmap(*ghost, image_retreat);
+	}
 }
 
-void MyWidget::releaseGhosts()
+void MyWidget::releaseGhosts(Ghost* ghost)
 {
-	releaseGhostsCounter++;
-	for (Ghost* ghost : ghosts) {
-		if (ghost->releaseTimer == releaseGhostsCounter ){
-			if (ghost->getMode() == WAIT){
-				ghost->changeMode(CHASE);
-				ghost->moveTo(POINT_OF_GHOST_SPAWN);
-				std::cout << "moved" << std::endl;
-			} else {
-				hasReleasingEnded = true;
-			}
-		}
+	if (ghost->getMode() == WAIT){
+		ghost->changeMode(CHASE);
+		ghost->moveTo(POINT_OF_GHOST_SPAWN);
+		ghost->direction_now = NO_MOVE;
+		ghost->direction_next = NO_MOVE;
+	} else {
+		hasReleasingEnded = true;
 	}
 }
 
@@ -305,10 +336,42 @@ void MyWidget::handleSmallPointCollision() {
 	for(QRect& point : points) {
 		if(pacman.intersects(point)) {
 			points.remove(point);
+			releaseGhostsCounter++;
 			// todo ADDING SCORE
 			break;
 		}
 	}
+}
+
+void MyWidget::handleBigPointCollision()
+{
+	for(QPoint& point: bigPoints){
+		if (pacman.contains(point)){
+			bigPoints.remove(point);
+			for (Ghost* ghost : ghosts){
+				if(ghost->getMode() == CHASE){
+					ghost->changeMode(RETREAT);
+					ghost->isEatable = true;
+					ghost->direction_next = {ghost->direction_now.first * (-1), ghost->direction_now.second * (-1)};
+				}
+			}
+			break;
+		}
+	}
+}
+
+void MyWidget::handleGhostCollision(Ghost *ghost)
+{
+	if (pacman.intersects(*ghost) || pacman.intersects(ghost->previousPosition))
+		if (ghost->isEatable){
+			ghost->isEatable = false;
+			ghost->direction_now = UP;
+			ghost->direction_next = NO_MOVE;
+			//std::cout << "teleported" << std::endl;
+			ghost->moveTo(ghost->initialPosition);
+			ghost->changeMode(WAIT);
+			ghost->redeploymentTimeCounter = 0;
+		}
 }
 
 
