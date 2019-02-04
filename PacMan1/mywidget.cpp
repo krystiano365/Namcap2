@@ -20,6 +20,7 @@ MyWidget::~MyWidget()
 
 void MyWidget::startGame() {
 	hasReleasingEnded = false;
+	releaseGhostsCounter = 0;
 	mapArray = std::vector<std::string>();
 	pacman = Pacman(QRect());
 
@@ -148,17 +149,7 @@ void MyWidget::updateScreen(){
 	if(frameCounter == ENTITY_SPEED) {
 		frameCounter = 0;
 		if (!hasReleasingEnded){
-			releaseGhostsCounter++;
-			for (Ghost* ghost : ghosts) {
-				if (ghost->releaseTimer == releaseGhostsCounter ){
-					if (ghost->getMode() == WAIT){
-						ghost->changeMode(CHASE);
-						ghost->moveTo(POINT_OF_GHOST_SPAWN);
-					} else {
-						hasReleasingEnded = true;
-					}
-				}
-			}
+			releaseGhosts();
 		}
 		handleSmallPointCollision();
 		for(Ghost* ghost: ghosts){
@@ -291,6 +282,22 @@ void MyWidget::drawPacman(QPainter &painter){
 void MyWidget::drawGhost(QPainter &painter, Ghost* ghost, QPixmap &image){
 	painter.setBrush(Qt::red);
 	painter.drawPixmap(*ghost, image);
+}
+
+void MyWidget::releaseGhosts()
+{
+	releaseGhostsCounter++;
+	for (Ghost* ghost : ghosts) {
+		if (ghost->releaseTimer == releaseGhostsCounter ){
+			if (ghost->getMode() == WAIT){
+				ghost->changeMode(CHASE);
+				ghost->moveTo(POINT_OF_GHOST_SPAWN);
+				std::cout << "moved" << std::endl;
+			} else {
+				hasReleasingEnded = true;
+			}
+		}
+	}
 }
 
 void MyWidget::handleSmallPointCollision() {
