@@ -4,6 +4,7 @@ Ghost::Ghost(QRect rect) : Entity(rect)
 {
 	isEatable = false;
 	hasAlreadyBeenReleased = false;
+	image_frightened = loadPixmap("utils/wall_horizontal.bmp");
 	direction_next = NO_MOVE;
 }
 

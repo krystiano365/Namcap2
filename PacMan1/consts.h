@@ -18,7 +18,13 @@
 #define BIG_POINT_R	4		//original size
 
 #define GHOST_REDEPLOYMENT_FRAMETIME 20	//game screen refreshes (actually FRAMETIME is the number of PACMAN's frames/steps) needed for ghost to redeploy
-#define GHOST_RETREAT_TIME 5*FPS		//time for which ghosts are eatable
+#define GHOST_RETREAT_TIME 7*FPS		//time for which ghosts are eatable
+
+#define CENTER_X ((TILE_W * MAP_W)/2)
+
+#define BIG_POINT_SCORE_VALUE 50
+#define SMALL_POINT_SCORE_VALUE 10
+#define GHOST_SCORE_VALUE 200
 
 #define POINT_OF_GHOST_SPAWN QPoint(13*TILE_W, 14*TILE_H)
 

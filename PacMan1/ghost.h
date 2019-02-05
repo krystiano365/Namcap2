@@ -27,6 +27,7 @@ public:
 	QPoint initialPosition;
 	QRect previousPosition;
 	QPixmap image;
+	QPixmap image_frightened;
 	Ghost(QRect rect);
 	void turnEntity() override;
 	virtual void pickNextDirection() = 0;

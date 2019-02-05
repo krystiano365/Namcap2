@@ -21,7 +21,10 @@ class MyWidget : public QWidget
 private:
 	QTimer *timer;
 	bool hasReleasingEnded;
+	bool gameOver;
+	bool success;
 	bool stop;
+	int score;
 	int frameCounter;
 	int releaseGhostsCounter;
 	int retreatFrameTimeCounter;
@@ -54,6 +57,8 @@ private:
 	void drawPacman(QPainter &painter);
 	void drawGhost(QPainter &painter, Ghost* ghost,  QPixmap &image_chase, QPixmap &image_retreat);
 	void drawGameOver(QPainter & painter);
+	void drawSuccess(QPainter & painter);
+	void drawTimeLeft(QPainter & painter);
 	void releaseGhosts(Ghost* ghost);
 	void movePacman();
 	void moveGhost(Ghost* ghost);
@@ -61,6 +66,9 @@ private:
 	void handleBigPointCollision();
 	void handleGhostCollision(Ghost *ghost);
 	void checkAndHandleGhostRetreatActions();
+	void addScore(short scoreToAdd);
+	void checkSuccessConditions();
+
 
 	//==========debugging options======
 	void debug_showCollisionRectangles(QPainter &painter);
@@ -74,7 +82,7 @@ public:
 	void paintEvent(QPaintEvent *);
 	void keyPressEvent(QKeyEvent *);
 public slots:
-	void updateScreen();
+	void updateScreen();	
 };
 
 #endif // MYWIDGET_H

@@ -19,12 +19,11 @@ MyWidget::~MyWidget()
 }
 
 void MyWidget::startGame() {
-	stop = false;
-	hasReleasingEnded = false;
-	isRetreatActive = false;
+	gameOver = success = stop = hasReleasingEnded = isRetreatActive = false;
 	releaseGhostsCounter = 0;
 	frameCounter = 0;
 	retreatFrameTimeCounter = 0;
+	score = 0;
 	mapArray = std::vector<std::string>();
 	pacman = Pacman(QRect());
 
@@ -129,24 +128,36 @@ void MyWidget::distributeMapObjects() {
 			}
 		}
 	}
-
 }
 
 
 void MyWidget::paintEvent(QPaintEvent *){
 	QPainter painter(this);
 	painter.setPen(Qt::yellow);
+	QFont newFont("Helvetica", 12, QFont::Bold);
+	painter.setFont(newFont);
 
-
+	painter.drawText(0, TILE_H, QString("SCORE: " + QString::number(score)));
 	drawPoints(painter);
 	drawWalls_all(painter);
 	drawGates(painter, image_gates);
-	if(stop){
+
+
+	if(isRetreatActive && !success && !gameOver){
+		drawTimeLeft(painter);
+	}
+	if(gameOver){
+		painter.setPen(Qt::red);
 		drawGameOver(painter);
 	}
+	if(success){
+		painter.setPen(Qt::green);
+		drawSuccess(painter);
+	}
+
 	drawPacman(painter);
 	for(Ghost* ghost : ghosts){
-		drawGhost(painter, ghost, ghost->image, image_wall);
+		drawGhost(painter, ghost, ghost->image, ghost->image_frightened);
 	}
 
 
@@ -183,6 +194,7 @@ void MyWidget::updateScreen(){
 		checkAndHandleGhostRetreatActions();
 		for(Ghost* ghost : ghosts)
 			handleGhostCollision(ghost);
+		checkSuccessConditions();
 	}
 	this->update();
 }
@@ -289,6 +301,7 @@ void MyWidget::drawPoints(QPainter &painter){
 }
 
 void MyWidget::drawPacman(QPainter &painter){
+	painter.setPen(Qt::NoPen);
 	painter.setBrush(Qt::yellow);
 	pacman.moveMouth();
 	pacman.turnEntity();
@@ -306,17 +319,23 @@ void MyWidget::drawGhost(QPainter &painter, Ghost* ghost, QPixmap &image_chase, 
 
 void MyWidget::drawGameOver(QPainter &painter)
 {
-	painter.setPen(Qt::red);
-	QFont newFont("Helvetica", 12, QFont::Bold);
-	painter.setFont(newFont);
-	painter.drawText(QRect(10*TILE_W, 20*TILE_H, TILE_W, TILE_H), "G");
-	painter.drawText(QRect(11*TILE_W, 20*TILE_H, TILE_W, TILE_H), "A");
-	painter.drawText(QRect(12*TILE_W, 20*TILE_H, TILE_W, TILE_H), "M");
-	painter.drawText(QRect(13*TILE_W, 20*TILE_H, TILE_W, TILE_H), "E");
-	painter.drawText(QRect(14*TILE_W, 20*TILE_H, TILE_W, TILE_H), "O");
-	painter.drawText(QRect(15*TILE_W, 20*TILE_H, TILE_W, TILE_H), "V");
-	painter.drawText(QRect(16*TILE_W, 20*TILE_H, TILE_W, TILE_H), "E");
-	painter.drawText(QRect(17*TILE_W, 20*TILE_H, TILE_W, TILE_H), "R");
+	int width = 9*TILE_W;
+	painter.drawText(CENTER_X-width/2, 20*TILE_H, width, TILE_H, Qt::AlignHCenter, "GAME OVER");
+}
+
+void MyWidget::drawSuccess(QPainter &painter)
+{
+	int width = 7*TILE_W;
+	painter.drawText(CENTER_X-width/2, 20*TILE_H, width, TILE_H, Qt::AlignHCenter, "SUCCESS");
+}
+
+void MyWidget::drawTimeLeft(QPainter &painter)
+{
+	int timeLeft = GHOST_RETREAT_TIME - retreatFrameTimeCounter;
+	if (timeLeft < 50)
+		painter.setPen(Qt::red);
+	painter.drawText(CENTER_X-TILE_W-(TILE_W/2), 20*TILE_H, 3*TILE_W,
+					 TILE_H, Qt::AlignHCenter, QString(QString::number(timeLeft)));
 }
 
 void MyWidget::releaseGhosts(Ghost* ghost)
@@ -372,7 +391,7 @@ void MyWidget::handleSmallPointCollision() {
 		if(pacman.intersects(point)) {
 			points.remove(point);
 			releaseGhostsCounter++;
-			// todo ADDING SCORE
+			addScore(SMALL_POINT_SCORE_VALUE);
 			break;
 		}
 	}
@@ -385,6 +404,7 @@ void MyWidget::handleBigPointCollision()
 			isRetreatActive = true;
 			retreatFrameTimeCounter = 0;
 			bigPoints.remove(point);
+			addScore(BIG_POINT_SCORE_VALUE);
 			for (Ghost* ghost : ghosts){
 				if(ghost->getMode() == CHASE){
 					ghost->changeMode(RETREAT);
@@ -401,6 +421,7 @@ void MyWidget::handleGhostCollision(Ghost *ghost)
 {
 	if(pacman.intersects(*ghost) || pacman.intersects(ghost->previousPosition)) {
 		if (ghost->isEatable){
+			addScore(GHOST_SCORE_VALUE);
 			ghost->isEatable = false;
 			ghost->direction_now = UP;
 			ghost->direction_next = NO_MOVE;
@@ -410,6 +431,7 @@ void MyWidget::handleGhostCollision(Ghost *ghost)
 			ghost->redeploymentTimeCounter = 0;
 		} else {
 			stopGame();
+			gameOver = true;
 		}
 	}
 }
@@ -430,6 +452,19 @@ void MyWidget::checkAndHandleGhostRetreatActions()
 			}
 			isRetreatActive = false;
 		}
+	}
+}
+
+void MyWidget::addScore(short scoreToAdd)
+{
+	score += scoreToAdd;
+}
+
+void MyWidget::checkSuccessConditions()
+{
+	if(bigPoints.empty() && points.empty()){
+		success = true;
+		stopGame();
 	}
 }
 
