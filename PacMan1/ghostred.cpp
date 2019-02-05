@@ -8,31 +8,18 @@ GhostRed::GhostRed(QRect rect, std::pair<short,short> initial_direction, QString
 	pacman = p;
 }
 
-void GhostRed::pickNextDirection()
-{
-
-	fillPossibleNextDirections();
-
-	switch(mode) {
-	case WAIT:
-		wait();
-		break;
-	case CHASE:
-		chase();
-		break;
-	case RETREAT:
-		retreat();
-		break;
-	}
-
-	clearPossibleDirections();
-}
 
 void GhostRed::chase()
 {
-	size_t random;
-	random = randomize(possibleDirections.size());
 
-	direction_next = possibleDirections.at(random - 1);
+	calculateDirectionsPriority(pacman.x(), pacman.y());
 
+	for(std::pair<short, short> direction : directionsPriority){
+		for(std::pair<short, short> possibleDir : possibleDirections){
+			if(direction == possibleDir){
+				direction_next = direction;
+				return;
+			}
+		}
+	}
 }

@@ -16,6 +16,9 @@ MyWidget::MyWidget(QWidget *parent) : QWidget(parent), pacman(QRect())
 MyWidget::~MyWidget()
 {
 	delete timer;
+	for(Ghost* ghost : ghosts){
+		delete ghost;
+	}
 }
 
 void MyWidget::startGame() {
@@ -112,7 +115,7 @@ void MyWidget::distributeMapObjects() {
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
 			case 'b':
-				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN, "utils/ghost_red.bmp", 16, pacman));
+				ghosts.push_back(new GhostCyan(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN, "utils/ghost_red.bmp", 16, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;

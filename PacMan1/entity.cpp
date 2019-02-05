@@ -5,6 +5,8 @@
 Entity::Entity(QRect rect) : QRect(rect)
 {
 	stepLeft = stepRight = stepUp = stepDown = QRect(x(), y(), TILE_W, TILE_H);
+	canRotateUp=canRotateDown=canRotateLeft=canRotateRight = false;
+	canMove = false;
 	updateCollisionRects();
 }
 

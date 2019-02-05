@@ -16,11 +16,14 @@ protected:
 	enum::mode mode;
 	size_t randomize(size_t upperLimit);
 	std::vector<std::pair<short, short>> possibleDirections;
+	std::vector<std::pair<short, short>> directionsPriority;
 	void fillPossibleNextDirections();
 	void clearPossibleDirections();
 	QPixmap loadPixmap(QString path);
 	void wait();
 	void retreat();
+	virtual void chase() = 0;
+	void calculateDirectionsPriority(int accordingToX, int accordingToY);
 public:
 	int redeploymentTimeCounter = 0;
 	short ghostSpeed, frameCounter = 0;
@@ -32,8 +35,7 @@ public:
 	QPixmap image_frightened;
 	Ghost(QRect rect, Pacman& p);
 	void turnEntity() override;
-	virtual void pickNextDirection() = 0;
-	virtual void chase() = 0;
+	void pickNextDirection();
 	void changeMode(enum::mode intoMode);
 	enum::mode getMode();
 

@@ -4,6 +4,7 @@
 #include "consts.h"
 #include "pacman.h"
 #include "ghostred.h"
+#include "ghostcyan.h"
 #include <memory>
 #include <fstream>
 #include <iostream>

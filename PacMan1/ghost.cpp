@@ -1,4 +1,5 @@
 #include "ghost.h"
+#include <math.h>
 
 Ghost::Ghost(QRect rect, Pacman& p) : Entity(rect), pacman(p)
 {
@@ -51,6 +52,25 @@ void Ghost::turnEntity()
 
 }
 
+void Ghost::pickNextDirection()
+{
+	fillPossibleNextDirections();
+
+	switch(mode) {
+	case WAIT:
+		wait();
+		break;
+	case CHASE:
+		chase();
+		break;
+	case RETREAT:
+		retreat();
+		break;
+	}
+
+	clearPossibleDirections();
+}
+
 void Ghost::changeMode(enum::mode intoMode)
 {
 	mode = intoMode;
@@ -70,15 +90,62 @@ void Ghost::wait()
 
 void Ghost::retreat()
 {
-	size_t random;
-	random = randomize(possibleDirections.size());
+//	size_t random;
+//	random = randomize(possibleDirections.size());
 
-	direction_next = possibleDirections.at(random - 1);
-//	int heightDifference = y() - pacman.y();
-//	int widthDifference = x() - pacman.x();
-//	if (heightDifference >= widthDifference){
+//	direction_next = possibleDirections.at(random - 1);
 
-//	}
+	calculateDirectionsPriority(pacman.x(), pacman.y());
+
+	for(std::pair<short, short> direction : directionsPriority){
+		std::pair<short, short> temp = {direction.first*(-1), direction.second*(-1)};
+		for(std::pair<short, short> possibleDir : possibleDirections){
+			if(temp == possibleDir){
+				direction_next = temp;
+				return;
+			}
+		}
+	}
+}
+
+void Ghost::calculateDirectionsPriority(int accordingToX, int accordingToY)
+{
+	int yDifference = y() - accordingToY;
+	int xDifference = x() - accordingToX;
+	bool isYBigger = (abs(xDifference) <= abs(yDifference));
+	if (xDifference <= 0 && yDifference > 0){ // 1 ćwiartka
+		if (isYBigger){
+			directionsPriority = {UP, RIGHT, LEFT, DOWN};
+//			UP, RIGHT, LEFT, DOWN;
+		} else {
+			directionsPriority = {RIGHT, UP, DOWN, LEFT};
+//			RIGHT, UP, DOWN, LEFT;
+		}
+	} else if (xDifference > 0 && yDifference > 0) {	// 2 ćwiartka
+		if (isYBigger){
+			directionsPriority = {UP, LEFT, RIGHT, DOWN};
+//			UP, LEFT, RIGHT, DOWN;
+		} else {
+			directionsPriority = {LEFT, UP, DOWN, RIGHT};
+//			LEFT, UP, DOWN, RIGHT;
+		}
+	} else if (xDifference > 0 && yDifference <= 0) {	// 3 ćwiartka
+		if (isYBigger){
+			directionsPriority = {DOWN, LEFT, RIGHT, UP};
+//			DOWN, LEFT, RIGHT, UP;
+		} else {
+			directionsPriority = {LEFT, DOWN, UP, RIGHT};
+//			LEFT, DOWN, UP, RIGHT;
+		}
+	} else if (xDifference <= 0 && yDifference <= 0) {	// 4 ćwiartka
+		if (isYBigger){
+			directionsPriority = {DOWN, RIGHT, LEFT, UP};
+//			DOWN, RIGHT, LEFT, UP;
+		} else {
+			directionsPriority = {RIGHT, DOWN, UP, LEFT};
+//			RIGHT, DOWN, UP, LEFT;
+		}
+	}
 }
 
 

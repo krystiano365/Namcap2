@@ -8,22 +8,12 @@ GhostCyan::GhostCyan(QRect rect, std::pair<short,short> initial_direction, QStri
 	pacman = p;
 }
 
-void GhostCyan::pickNextDirection()
-{
-	switch(mode) {
-	case WAIT:
-		wait();
-		break;
-	case CHASE:
-		chase();
-		break;
-	case RETREAT:
-		retreat();
-		break;
-	}
-}
+
 
 void GhostCyan::chase()
 {
+	size_t random;
+	random = randomize(possibleDirections.size());
 
+	direction_next = possibleDirections.at(random - 1);
 }
