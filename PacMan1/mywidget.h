@@ -5,6 +5,8 @@
 #include "pacman.h"
 #include "ghostred.h"
 #include "ghostcyan.h"
+#include "ghostorange.h"
+#include "ghostpink.h"
 #include <memory>
 #include <fstream>
 #include <iostream>

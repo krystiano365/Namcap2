@@ -1,6 +1,7 @@
 #include "ghostcyan.h"
 
-GhostCyan::GhostCyan(QRect rect, std::pair<short,short> initial_direction, QString image_path, int pointsNeededForRelease, Pacman& p) : Ghost(rect, p)
+GhostCyan::GhostCyan(QRect rect, std::pair<short,short> initial_direction,
+					 QString image_path, int pointsNeededForRelease, Pacman& p) : Ghost(rect, p)
 {
 	direction_now = initial_direction;
 	image = loadPixmap(image_path);

@@ -11,28 +11,29 @@
 class Ghost : public Entity
 {
 private:
+	enum::mode mode;
 protected:
 	Pacman& pacman;
-	enum::mode mode;
-	size_t randomize(size_t upperLimit);
 	std::vector<std::pair<short, short>> possibleDirections;
 	std::vector<std::pair<short, short>> directionsPriority;
+	size_t randomize(size_t upperLimit);
+	QPixmap loadPixmap(QString path);
 	void fillPossibleNextDirections();
 	void clearPossibleDirections();
-	QPixmap loadPixmap(QString path);
 	void wait();
 	void retreat();
-	virtual void chase() = 0;
 	void calculateDirectionsPriority(int accordingToX, int accordingToY);
+	virtual void chase() = 0;
 public:
 	int redeploymentTimeCounter = 0;
-	short ghostSpeed, frameCounter = 0;
-	bool hasAlreadyBeenReleased;
 	int releaseScore;
-	QPoint initialPosition;
+	bool hasAlreadyBeenReleased;
+	short ghostSpeed, frameCounter = 0;
 	QRect previousPosition;
+	QPoint initialPosition;
 	QPixmap image;
 	QPixmap image_frightened;
+
 	Ghost(QRect rect, Pacman& p);
 	void turnEntity() override;
 	void pickNextDirection();

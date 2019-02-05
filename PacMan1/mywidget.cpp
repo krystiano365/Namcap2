@@ -115,16 +115,16 @@ void MyWidget::distributeMapObjects() {
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
 			case 'b':
-				ghosts.push_back(new GhostCyan(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN, "utils/ghost_red.bmp", 16, pacman));
+				ghosts.push_back(new GhostCyan(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN, "utils/ghost_red.bmp", 32, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
 			case 'd':
-				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), UP, "utils/ghost_red.bmp", 24, pacman));
+				ghosts.push_back(new GhostOrange(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), UP, "utils/ghost_red.bmp", 48, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};break;
 			case 'e':
-				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN, "utils/ghost_red.bmp", 32, pacman));
+				ghosts.push_back(new GhostPink(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN, "utils/ghost_red.bmp", 64, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
@@ -186,7 +186,7 @@ void MyWidget::updateScreen(){
 				std::cout<< "CanMove: " << ghost->canMove << " UP: " << ghost->canRotateUp << " down: " << ghost->canRotateDown << " LEFT: " << ghost->canRotateLeft << " right: " << ghost->canRotateRight << " dir_now: "<< ghost->direction_now.first << ", " << ghost->direction_now.second<< " dir_next: "<< ghost->direction_next.first << ", " << ghost->direction_next.second<<  std::endl;
 
 				if (ghost->hasAlreadyBeenReleased && ghost->getMode() == WAIT){
-					ghost->redeploymentTimeCounter++;		//increasing ghost's redeployment counter (due to pacman's step speed)
+					ghost->redeploymentTimeCounter++;		//increasing ghost's redeployment counter
 				}
 			}
 			movePacman();
@@ -227,7 +227,6 @@ void MyWidget::keyPressEvent(QKeyEvent *event){
 	case Qt::Key_Escape:
 		startGame();
 	}
-	std::cout<< "catching moves finished"<<std::endl;
 }
 
 void MyWidget::openImages()
@@ -256,7 +255,7 @@ void MyWidget::initializeContainers()
 	points = std::list<QRect>();
 	bigPoints = std::list<QPoint>();
 	ghosts = std::vector<Ghost*>();
-	//ghosts.reserve(4);
+	ghosts.reserve(4);
 }
 
 void MyWidget::drawWalls_ref(QPainter &painter, std::vector<QRect> &wallType, QPixmap &image){
@@ -370,7 +369,7 @@ void MyWidget::moveGhost(Ghost *ghost)
 	if (ghost->redeploymentTimeCounter == GHOST_REDEPLOYMENT_FRAMETIME)
 		releaseGhosts(ghost);
 
-	if (!hasReleasingEnded && ghost->releaseScore == releaseGhostsCounter ){
+	if (!hasReleasingEnded && ghost->releaseScore == releaseGhostsCounter && !ghost->hasAlreadyBeenReleased){
 		releaseGhosts(ghost);
 		ghost->hasAlreadyBeenReleased = true;
 	}

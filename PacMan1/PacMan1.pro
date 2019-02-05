@@ -31,7 +31,9 @@ SOURCES += \
     pacman.cpp \
     ghost.cpp \
     ghostred.cpp \
-    ghostcyan.cpp
+    ghostcyan.cpp \
+    ghostorange.cpp \
+    ghostpink.cpp
 
 HEADERS += \
         mywidget.h \
@@ -41,7 +43,9 @@ HEADERS += \
     pacman.h \
     ghost.h \
     ghostred.h \
-    ghostcyan.h
+    ghostcyan.h \
+    ghostorange.h \
+    ghostpink.h
 
 FORMS += \
         mywidget.ui
