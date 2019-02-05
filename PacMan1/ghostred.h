@@ -7,7 +7,7 @@
 class GhostRed : public Ghost
 {
 public:
-	GhostRed(QRect rect);
+	GhostRed(QRect rect, std::pair<short,short> initial_direction, QString image_path, int pointsNeededForRelease, Pacman& p);
 	void pickNextDirection() override;
 	void chase() override;
 };

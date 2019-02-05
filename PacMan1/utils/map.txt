@@ -13,9 +13,9 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 300002.|3002x||x1004|.100004
 xxxxx|.|1004x34x3002|.|xxxxx
 xxxxx|.||xxxxxxxxxx||.|xxxxx
-xxxxx|.||x100xx002x||.|xxxxx
+xxxxx|.||x100--002x||.|xxxxx
 000004.34x|xxxxxx|x34.300000
-xxxxxx.xxx|xabdex|xxx.xxxxxx
+xxxxxx.xxx|xaxxax|xxx.xxxxxx
 000002.12x|xxxxxx|x12.100000
 xxxxx|.||x30000004x||.|xxxxx
 xxxxx|.||xxxxxxxxxx||.|xxxxx

@@ -28,7 +28,7 @@
 
 #define POINT_OF_GHOST_SPAWN QPoint(13*TILE_W, 14*TILE_H)
 
-#define CURDIR ("/home/krystian/Documents/C++/qtcreator/PacMan1/")
+#define CURDIR ("/home/krystian/Documents/C++/qtcreator/Namcap2/PacMan1/")
 
 enum mode {
 	CHASE, RETREAT, WAIT

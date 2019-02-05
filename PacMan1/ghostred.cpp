@@ -1,11 +1,11 @@
 #include "ghostred.h"
 
-GhostRed::GhostRed(QRect rect) : Ghost(rect)
+GhostRed::GhostRed(QRect rect, std::pair<short,short> initial_direction, QString image_path, int pointsNeededForRelease, Pacman& p) : Ghost(rect, p)
 {
-	mode = WAIT;
-	direction_now = UP;
-	image = loadPixmap("utils/wall_knee.bmp");
-	releaseScore = 8;
+	direction_now = initial_direction;
+	image = loadPixmap(image_path);
+	releaseScore = pointsNeededForRelease;
+	pacman = p;
 }
 
 void GhostRed::pickNextDirection()
@@ -18,7 +18,6 @@ void GhostRed::pickNextDirection()
 		wait();
 		break;
 	case CHASE:
-//		std::cout << "chase" << std:: endl;
 		chase();
 		break;
 	case RETREAT:

@@ -1,7 +1,8 @@
 #include "ghost.h"
 
-Ghost::Ghost(QRect rect) : Entity(rect)
+Ghost::Ghost(QRect rect, Pacman& p) : Entity(rect), pacman(p)
 {
+	mode = WAIT;
 	isEatable = false;
 	hasAlreadyBeenReleased = false;
 	image_frightened = loadPixmap("utils/wall_horizontal.bmp");
@@ -73,7 +74,11 @@ void Ghost::retreat()
 	random = randomize(possibleDirections.size());
 
 	direction_next = possibleDirections.at(random - 1);
+//	int heightDifference = y() - pacman.y();
+//	int widthDifference = x() - pacman.x();
+//	if (heightDifference >= widthDifference){
 
+//	}
 }
 
 

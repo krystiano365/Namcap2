@@ -5,12 +5,14 @@
 #include <random>
 #include <QPixmap>
 #include <string>
+#include <pacman.h>
 
 
 class Ghost : public Entity
 {
 private:
 protected:
+	Pacman& pacman;
 	enum::mode mode;
 	size_t randomize(size_t upperLimit);
 	std::vector<std::pair<short, short>> possibleDirections;
@@ -28,7 +30,7 @@ public:
 	QRect previousPosition;
 	QPixmap image;
 	QPixmap image_frightened;
-	Ghost(QRect rect);
+	Ghost(QRect rect, Pacman& p);
 	void turnEntity() override;
 	virtual void pickNextDirection() = 0;
 	virtual void chase() = 0;

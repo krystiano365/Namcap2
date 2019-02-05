@@ -107,21 +107,21 @@ void MyWidget::distributeMapObjects() {
 				pacman.setRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H);
 				break;
 			case 'a':
-				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
+				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), UP, "utils/ghost_red.bmp", 8, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
 			case 'b':
-				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
+				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN, "utils/ghost_red.bmp", 16, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
 			case 'd':
-				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
+				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), UP, "utils/ghost_red.bmp", 24, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};break;
 			case 'e':
-				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H)));
+				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN, "utils/ghost_red.bmp", 32, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;

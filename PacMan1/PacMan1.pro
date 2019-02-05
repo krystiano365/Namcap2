@@ -30,7 +30,8 @@ SOURCES += \
     entity.cpp \
     pacman.cpp \
     ghost.cpp \
-    ghostred.cpp
+    ghostred.cpp \
+    ghostcyan.cpp
 
 HEADERS += \
         mywidget.h \
@@ -39,7 +40,8 @@ HEADERS += \
     entity.h \
     pacman.h \
     ghost.h \
-    ghostred.h
+    ghostred.h \
+    ghostcyan.h
 
 FORMS += \
         mywidget.ui
