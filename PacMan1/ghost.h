@@ -28,11 +28,10 @@ public:
 	int redeploymentTimeCounter = 0;
 	int releaseScore;
 	bool hasAlreadyBeenReleased;
-	short ghostSpeed, frameCounter = 0;
+	short currentGhostSpeed, normalGhostSpeed, frameCounter = 0;
 	QRect previousPosition;
 	QPoint initialPosition;
-	QPixmap image;
-	QPixmap image_frightened;
+	QPixmap image, image_frightened, image_chase, image_chase_up, image_chase_down;
 
 	Ghost(QRect rect, Pacman& p);
 	void turnEntity() override;

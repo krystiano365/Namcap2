@@ -110,21 +110,29 @@ void MyWidget::distributeMapObjects() {
 				pacman.setRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H);
 				break;
 			case 'a':
-				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), UP, "utils/ghost_red.bmp", 8, pacman));
+				ghosts.push_back(new GhostRed(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), UP,
+											  "utils/ghost_red.png", "utils/ghost_red_up.png", "utils/ghost_red_down.png",
+											  GHOST_RED_RELEASE, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
 			case 'b':
-				ghosts.push_back(new GhostCyan(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN, "utils/ghost_red.bmp", 32, pacman));
+				ghosts.push_back(new GhostCyan(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN,
+											   "utils/ghost_cyan.png", "utils/ghost_cyan_up.png", "utils/ghost_cyan_down.png",
+											   GHOST_CYAN_RELEASE, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
 			case 'd':
-				ghosts.push_back(new GhostOrange(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), UP, "utils/ghost_red.bmp", 48, pacman));
+				ghosts.push_back(new GhostOrange(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), UP,
+												 "utils/ghost_orange.png", "utils/ghost_orange_up.png",
+												 "utils/ghost_orange_down.png", GHOST_ORANGE_RELEASE, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};break;
 			case 'e':
-				ghosts.push_back(new GhostPink(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN, "utils/ghost_red.bmp", 64, pacman));
+				ghosts.push_back(new GhostPink(QRect(int(c)*TILE_W, int(r)*TILE_H, TILE_W, TILE_H), DOWN,
+											   "utils/ghost_pink.png", "utils/ghost_pink_up.png", "utils/ghost_pink_down.png",
+											   GHOST_PINK_RELEASE, pacman));
 				ghostBack = ghosts.back();
 				ghostBack->initialPosition = {ghostBack->x(), ghostBack->y()};
 				break;
@@ -174,7 +182,7 @@ void MyWidget::paintEvent(QPaintEvent *){
 void MyWidget::updateScreen(){
 	if (!stop){
 		for(Ghost* ghost: ghosts){
-			ghost->getMode()==RETREAT ? ghost->ghostSpeed=FRIGHTENED_GHOST_SPEED : ghost->ghostSpeed = NORMAL_GHOST_SPEED;
+			ghost->getMode()==RETREAT ? ghost->currentGhostSpeed=FRIGHTENED_GHOST_SPEED : ghost->currentGhostSpeed = ghost->normalGhostSpeed;
 			ghost->frameCounter++;
 			moveGhost(ghost);
 		}
@@ -234,7 +242,7 @@ void MyWidget::openImages()
 	try {
 		image_wall = QPixmap(QString(CURDIR).append("utils/wall_horizontal.bmp"));
 		image_wall_knee = QPixmap(QString(CURDIR).append("utils/wall_knee.bmp"));
-		image_gates = QPixmap(QString(CURDIR).append("utils/wall_knee.bmp"));
+		image_gates = QPixmap(QString(CURDIR).append("utils/gate.png"));
 	} catch (std::exception &e) {
 		std::cout<< e.what() << std::endl;
 		abort();
@@ -312,9 +320,10 @@ void MyWidget::drawPacman(QPainter &painter){
 }
 
 void MyWidget::drawGhost(QPainter &painter, Ghost* ghost, QPixmap &image_chase, QPixmap &image_retreat){
-	if (ghost->getMode() == CHASE || ghost->getMode() == WAIT)
+	if (ghost->getMode() == CHASE || ghost->getMode() == WAIT){
+		ghost->turnEntity();
 		painter.drawPixmap(*ghost, image_chase);
-	else {
+	} else {
 		painter.drawPixmap(*ghost, image_retreat);
 	}
 }
@@ -375,7 +384,7 @@ void MyWidget::moveGhost(Ghost *ghost)
 	}
 
 	ghost->previousPosition = *ghost;
-	if (ghost->frameCounter >= ghost->ghostSpeed) {		//delays ghost's movement
+	if (ghost->frameCounter >= ghost->currentGhostSpeed) {		//delays ghost's movement
 		ghost->frameCounter = 0;
 		ghost->move();
 	}

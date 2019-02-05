@@ -9,6 +9,16 @@
 #define FRIGHTENED_GHOST_SPEED (12 * MULTIPLIER)	// in practice it only slows ghosts down twice
 #define NORMAL_GHOST_SPEED (9 * MULTIPLIER)
 
+#define GHOST_RED_NORMAL_SPEED (10 * MULTIPLIER)
+#define GHOST_PINK_NORMAL_SPEED (9 * MULTIPLIER)
+#define GHOST_ORANGE_NORMAL_SPEED (10 * MULTIPLIER)
+#define GHOST_CYAN_NORMAL_SPEED (9 * MULTIPLIER)
+
+#define GHOST_RED_RELEASE 8
+#define GHOST_PINK_RELEASE 32
+#define GHOST_ORANGE_RELEASE 16
+#define GHOST_CYAN_RELEASE 24
+
 #define TILE_W 16			//original size x2
 #define TILE_H 16			//original size x2
 #define MAP_W 28			//original size
@@ -18,9 +28,9 @@
 #define BIG_POINT_R	4		//original size
 
 #define GHOST_REDEPLOYMENT_FRAMETIME 20	//game screen refreshes (actually FRAMETIME is the number of PACMAN's frames/steps) needed for ghost to redeploy
-#define GHOST_RETREAT_TIME 50*FPS		//time for which ghosts are eatable
+#define GHOST_RETREAT_TIME 7*FPS*MULTIPLIER		//time for which ghosts are eatable
 
-#define GHOST_PINK_TILES_AHEAD_PACMAN 4
+#define GHOST_PINK_TILES_AHEAD_PACMAN 12
 
 #define CENTER_X ((TILE_W * MAP_W)/2)
 

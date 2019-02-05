@@ -6,7 +6,7 @@ Ghost::Ghost(QRect rect, Pacman& p) : Entity(rect), pacman(p)
 	mode = WAIT;
 	isEatable = false;
 	hasAlreadyBeenReleased = false;
-	image_frightened = loadPixmap("utils/wall_horizontal.bmp");
+	image_frightened = loadPixmap("utils/ghost_frightened.png");
 	direction_next = NO_MOVE;
 }
 
@@ -49,7 +49,17 @@ QPixmap Ghost::loadPixmap(QString path)
 
 void Ghost::turnEntity()
 {
-
+	if (direction_now == UP) {
+		image = image_chase_up;
+	} else if (direction_now == DOWN){
+		image = image_chase_down;
+	} else if (direction_now == RIGHT) {
+		image = image_chase;
+	} else if (direction_now == LEFT) {
+		QTransform transform;
+		transform.scale(-1, 1);
+		image = image_chase.transformed(transform);
+	}
 }
 
 void Ghost::pickNextDirection()
